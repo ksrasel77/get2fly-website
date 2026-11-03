@@ -11,6 +11,9 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     /* Reset & CSS Variables */
     * {
@@ -118,6 +121,137 @@
 
     .nav-links a:hover, .nav-links a.active {
       color: var(--brand-blue);
+    }
+
+    /* --- Auth & Profile Dropdown Styles --- */
+    #auth-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    #logged-out-view {
+      display: flex;
+      gap: 8px;
+    }
+
+    .auth-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      background: #ffffff;
+      color: var(--text-main);
+      transition: background 0.2s, border-color 0.2s;
+      text-decoration: none;
+    }
+
+    .auth-btn.google-btn:hover { background: #f8f9fa; border-color: #cbd5e1; }
+    .auth-btn.fb-btn { background: #1877f2; color: #ffffff; border-color: #1877f2; }
+    .auth-btn.fb-btn:hover { background: #166fe5; }
+
+    #logged-in-view {
+      position: relative;
+      display: none;
+    }
+
+    .profile-trigger {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 30px;
+      border: 1px solid var(--border-color);
+      background-color: #ffffff;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .profile-trigger:hover {
+      background-color: #f9fafb;
+      border-color: var(--brand-blue);
+    }
+
+    #user-avatar-display {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    #user-email-display {
+      font-size: 0.85rem;
+      color: var(--text-main);
+      font-weight: 700;
+      max-width: 140px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dropdown-arrow {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      width: 200px;
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.1);
+      padding: 6px;
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .dropdown-menu.show {
+      display: flex;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      text-decoration: none;
+      background: none;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      font-weight: 600;
+      transition: background-color 0.15s ease;
+    }
+    .dropdown-item:hover {
+      background-color: #f1f5f9;
+      color: var(--brand-blue);
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background-color: var(--border-color);
+      margin: 4px 0;
+    }
+
+    .logout-item {
+      color: var(--accent-red);
+    }
+    .logout-item:hover {
+      background-color: #fff1f2;
+      color: var(--accent-red);
     }
 
     /* Hero Banner */
@@ -1174,6 +1308,43 @@
           </optgroup>
         </select>
 
+        <!-- Supabase Auth Container -->
+        <div id="auth-container">
+          <!-- Logged Out View: Google & Facebook Buttons -->
+          <div id="logged-out-view">
+            <button type="button" id="google-login-btn" class="auth-btn google-btn">
+              <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.3 9 5 12 5z"/>
+                <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
+                <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 10.8 0 12.5s.7 2.8 1.9 5.2l3.7-2.9z"/>
+                <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.3-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/>
+              </svg>
+              <span>Google</span>
+            </button>
+            <button type="button" id="fb-login-btn" class="auth-btn fb-btn">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+              <span>Facebook</span>
+            </button>
+          </div>
+
+          <!-- Logged In View: Profile Trigger & Dropdown -->
+          <div id="logged-in-view">
+            <div id="profile-menu-trigger" class="profile-trigger">
+              <img id="user-avatar-display" src="" alt="Profile" />
+              <span id="user-email-display"></span>
+              <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+            </div>
+            <div id="profile-dropdown" class="dropdown-menu">
+              <a href="#" class="dropdown-item" data-screen="account"><i class="fa-solid fa-user"></i> My Profile</a>
+              <a href="#" class="dropdown-item" data-screen="bookings"><i class="fa-solid fa-ticket"></i> My Bookings</a>
+              <div class="dropdown-divider"></div>
+              <button type="button" id="logout-btn" class="dropdown-item logout-item"><i class="fa-solid fa-power-off"></i> Log Out</button>
+            </div>
+          </div>
+        </div>
+
         <nav class="nav-links">
           <a href="#" class="active">Flights</a>
           <a href="#deals">Popular Routes</a>
@@ -1181,7 +1352,6 @@
           <a href="#how">How It Works</a>
           <a href="#faq">FAQ</a>
           <a href="#contact">Contact</a>
-          <a href="#" data-screen="account">Account</a>
         </nav>
       </div>
     </div>
@@ -1655,6 +1825,77 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+
+      // --- SUPABASE AUTHENTICATION INTEGRATION ---
+      // Replace these placeholders with your actual project details from Supabase Dashboard -> Settings -> API
+      const SUPABASE_URL = 'https://sfoxqtmpfybdjgsczgbj.supabase.co';
+      const SUPABASE_ANON_KEY = 'sb_publishable_-RI5tBwN5GOdp-SixcCf2A_feSRH1P_';
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      const loggedOutView = document.getElementById('logged-out-view');
+      const loggedInView = document.getElementById('logged-in-view');
+      const userEmailDisplay = document.getElementById('user-email-display');
+      const userAvatarImg = document.getElementById('user-avatar-display');
+      const profileTrigger = document.getElementById('profile-menu-trigger');
+      const profileDropdown = document.getElementById('profile-dropdown');
+
+      async function checkSupabaseSession() {
+        const { data: { session } } = await supabase.auth.getSession();
+        handleSupabaseAuthChange(session);
+      }
+
+      function handleSupabaseAuthChange(session) {
+        if (session) {
+          loggedOutView.style.display = 'none';
+          loggedInView.style.display = 'block';
+          userEmailDisplay.textContent = session.user.email;
+
+          const metadata = session.user.user_metadata;
+          const avatarUrl = metadata.avatar_url || metadata.picture;
+          userAvatarImg.src = avatarUrl || 'https://via.placeholder.com/28';
+        } else {
+          loggedOutView.style.display = 'flex';
+          loggedInView.style.display = 'none';
+          userEmailDisplay.textContent = '';
+          userAvatarImg.src = '';
+        }
+      }
+
+      checkSupabaseSession();
+
+      supabase.auth.onAuthStateChange((event, session) => {
+        handleSupabaseAuthChange(session);
+      });
+
+      document.getElementById('google-login-btn').addEventListener('click', async () => {
+        await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: 'https://get2fly.com' }
+        });
+      });
+
+      document.getElementById('fb-login-btn').addEventListener('click', async () => {
+        await supabase.auth.signInWithOAuth({
+          provider: 'facebook',
+          options: { redirectTo: 'https://get2fly.com' }
+        });
+      });
+
+      profileTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileDropdown.classList.toggle('show');
+      });
+
+      window.addEventListener('click', () => {
+        if (profileDropdown.classList.contains('show')) {
+          profileDropdown.classList.remove('show');
+        }
+      });
+
+      document.getElementById('logout-btn').addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        window.location.href = 'https://get2fly.com';
+      });
       
       // Multi-Region Currency Exchange Matrix (Base: BHD)
       const currencyRates = {
@@ -1827,7 +2068,6 @@
         const f = currencyRates[cur], t = currencyRates[selectedCurrency];
         return (!f || !t || cur === selectedCurrency) ? '' : `≈ ${t.symbol}${(amt / f.rate * t.rate).toFixed(0)} est.`;
       };
-      const noteBox = t => `<p class="text-center" style="padding:20px;">${t}</p>`;
 
       async function searchLiveFlights() {
         const type = document.querySelector('input[name="tripType"]:checked').value;
@@ -2048,7 +2288,7 @@
           } else {
             const confirmedPNR = data.bookingReference;
             if (window.saveBooking) saveBooking(confirmedPNR);
-            alert(`🎉 BOOKING CONFIRMED!\n\nAirline PNR Reference: ${confirmedPNR}\nDuffel Order ID: ${data.orderId}\nTotal Paid: ${data.currency} ${data.totalAmount}`);
+            alert(`🎉 BOOKING CONFIRMED!\n\nAirline PNR Reference: ${confirmedPNR}\nduffel Order ID: ${data.orderId}\nTotal Paid: ${data.currency} ${data.totalAmount}`);
             this.reset();
             closeCheckout();
           }
@@ -2154,7 +2394,6 @@
         document.getElementById(prefix+'-day-num').textContent=d.getDate();
         document.getElementById(prefix+'-month-txt').innerHTML=d.toLocaleDateString('en-GB',{month:'short',year:'numeric'})+'<br>'+d.toLocaleDateString('en-GB',{weekday:'long'});
       }
-      // The invisible date input now covers its whole card, so a tap opens the native calendar on every browser
       [dIn,rIn].forEach(i=>{
         i.style.cssText='position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;';
         i.parentElement.style.position='relative';
@@ -2180,7 +2419,7 @@
         document.getElementById('car-dropoff-wrap').hidden=!e.target.checked;
         document.getElementById('car-dropoff').required=e.target.checked;
       });
-      // WhatsApp number: digits only, with country code, no + or spaces (example: 97333123456)
+
       const WHATSAPP_NUMBER = '97337576600';
       const waReady = () => /^\d{8,15}$/.test(WHATSAPP_NUMBER);
       const waUrl = text => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
@@ -2209,7 +2448,6 @@
           ['Drop-off date', val('car-return-date') + ' ' + val('car-return-time')], ['Driver age', val('car-driver-age')]]));
       });
 
-      // Multi-city: default dates, and only require its fields when Multi-city is selected
       function setMc(){document.querySelectorAll('.mc-date').forEach((i,n)=>{i.min=todayIso;if(!i.value)i.value=addDays(14+n*7);});}
       function syncReq(){
         const m=document.querySelector('input[name="tripType"]:checked').value==='multicity';
@@ -2219,7 +2457,7 @@
       document.getElementById('add-city-leg').addEventListener('click',()=>{setMc();syncReq();});
       document.querySelectorAll('input[name="tripType"]').forEach(r=>r.addEventListener('change',syncReq));
 
-      // ===== Account area (front-end only: data stays in this browser until a backend is connected) =====
+      // ===== Account area (front-end only) =====
       const LS=(k,d)=>{try{const v=JSON.parse(localStorage.getItem('g2f_'+k));return v==null?d:v;}catch(e){return d;}};
       const SV=(k,v)=>{try{localStorage.setItem('g2f_'+k,JSON.stringify(v));}catch(e){}};
       const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
