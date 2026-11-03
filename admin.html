@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Get2Fly | Admin Dashboard</title>
+  <style>
+    body { font-family: sans-serif; background: #f8fafc; padding: 24px; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    th, td { padding: 14px; border-bottom: 1px solid #e2e8f0; text-align: left; }
+    th { background: #0B2545; color: #fff; }
+    .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; background: #d1fae5; color: #059669; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <h2><i class="fa-solid fa-user-shield"></i> Get2Fly Admin Dashboard</h2>
+  <div id="admin-status">Checking Admin Permissions...</div>
+
+  <table id="admin-table" style="display:none; margin-top:20px;">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>PNR Reference</th>
+        <th>Customer ID</th>
+        <th>Route</th>
+        <th>Airline</th>
+        <th>Total Fare</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="bookings-rows"></tbody>
+  </table>
+
+  <script>
+    const SUPABASE_URL = 'https://sfoxqtmpfybdjgsczgbj.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_-RI5tBwN5GOdp-SixcCf2A_feSRH1P_';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function loadAdminData() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        document.getElementById('admin-status').innerHTML = '<b style="color:red">Access Denied. Please log in with an Admin account on the home page.</b>';
+        return;
+      }
+
+      // Query database for all bookings
+      const { data: bookings, error } = await supabase.from('bookings').select('*').order('created_at', { ascending: false });
+
+      if (error) {
+        document.getElementById('admin-status').innerHTML = `<b style="color:red">Permission Denied: You do not have Admin privileges.</b>`;
+      } else {
+        document.getElementById('admin-status').style.display = 'none';
+        document.getElementById('admin-table').style.display = 'table';
+        
+        let html = '';
+        bookings.forEach(b => {
+          html += `
+            <tr>
+              <td>${new Date(b.created_at).toLocaleDateString()}</td>
+              <td><b>${b.pnr_code}</b></td>
+              <td>${b.user_id.slice(0, 8)}...</td>
+              <td>${b.route}</td>
+              <td>${b.airline}</td>
+              <td>${b.currency} ${b.total_amount}</td>
+              <td><span class="badge">${b.status}</span></td>
+            </tr>
+          `;
+        });
+        document.getElementById('bookings-rows').innerHTML = html;
+      }
+    }
+
+    loadAdminData();
+  </script>
+</body>
+</html>
