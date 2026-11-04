@@ -1260,6 +1260,30 @@
     .sh-chip.on{background:#e8f3ff;border-color:var(--brand-blue);color:var(--brand-blue)}
     #sh-price{width:100%;accent-color:var(--primary)}
     #sh-apply{margin:10px 18px 16px;background:var(--primary);color:#fff;border:none;border-radius:14px;padding:14px;font-weight:800;font-size:1rem;cursor:pointer}
+
+    /* Sign in sheet */
+    #login-sheet{position:fixed;inset:0;z-index:1200;display:flex;align-items:flex-end;justify-content:center}
+    #login-sheet[hidden]{display:none}
+    .ls-backdrop{position:absolute;inset:0;background:rgba(11,37,69,.55)}
+    .ls-panel{position:relative;background:#fff;width:100%;max-width:460px;border-radius:24px 24px 0 0;padding:26px 20px 24px;max-height:92vh;overflow-y:auto}
+    @media(min-width:640px){#login-sheet{align-items:center}.ls-panel{border-radius:24px}}
+    .ls-close,.ls-back{position:absolute;top:12px;border:none;background:var(--bg-light);width:34px;height:34px;border-radius:50%;cursor:pointer}
+    .ls-close{right:14px}.ls-back{left:14px}
+    .ls-panel h3{text-align:center;font-size:1.25rem;margin:6px 34px 18px}
+    .ls-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;border-radius:30px;padding:14px;font-size:1rem;font-weight:600;border:1.5px solid var(--border-color);cursor:pointer;margin-bottom:12px;background:#fff;color:var(--brand-dark)}
+    .ls-google{background:#4285F4;border-color:#4285F4;color:#fff}.ls-fb{background:#1877f2;border-color:#1877f2;color:#fff}
+    .ls-gicon{background:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+    .ls-terms{text-align:center;font-size:.8rem;color:var(--text-muted);margin-top:10px}.ls-terms a{color:var(--brand-dark);font-weight:700}
+    .ls-tabs{display:flex;gap:8px;margin-bottom:14px}
+    .ls-tabs button{flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--border-color);background:#fff;font-weight:700;cursor:pointer}
+    .ls-tabs button.on{background:#e8f3ff;border-color:var(--brand-blue);color:var(--brand-blue)}
+    #ls-form input,#ls-rform input{width:100%;padding:13px;border:2px solid var(--border-color);border-radius:12px;font:inherit;margin-bottom:10px}
+    #ls-form input[hidden]{display:none}
+    .ls-submit{background:var(--primary)!important;color:#fff!important;border-color:var(--primary)!important}
+    .ls-link{background:none;border:none;color:var(--brand-blue);font-weight:700;cursor:pointer;display:block;margin:4px auto}
+    .ls-msg{text-align:center;font-size:.88rem;margin-top:8px;min-height:1.2em}.ls-msg.err{color:#b91c1c}.ls-msg.ok{color:#166534}
+    .av-login-btn{background:#fff;color:var(--brand-dark);border:none;border-radius:30px;padding:13px 34px;font-weight:800;font-size:1.05rem;cursor:pointer;margin-top:14px}
+    @media(max-width:640px){#user-email-display{display:none}}
   </style>
 </head>
 <body>
@@ -1310,25 +1334,6 @@
 
         <!-- Supabase Auth Container -->
         <div id="auth-container">
-          <!-- Logged Out View: Google & Facebook Buttons -->
-          <div id="logged-out-view">
-            <button type="button" id="google-login-btn" class="auth-btn google-btn">
-              <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
-                <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.3 9 5 12 5z"/>
-                <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
-                <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 10.8 0 12.5s.7 2.8 1.9 5.2l3.7-2.9z"/>
-                <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.3-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/>
-              </svg>
-              <span>Google</span>
-            </button>
-            <button type="button" id="fb-login-btn" class="auth-btn fb-btn">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-              <span>Facebook</span>
-            </button>
-          </div>
-
           <!-- Logged In View: Profile Trigger & Dropdown -->
           <div id="logged-in-view">
             <div id="profile-menu-trigger" class="profile-trigger">
@@ -1795,6 +1800,41 @@
     </div>
   </div>
 
+  <!-- Sign in / sign up sheet -->
+  <div id="login-sheet" hidden>
+    <div class="ls-backdrop"></div>
+    <div class="ls-panel" role="dialog" aria-modal="true" aria-labelledby="ls-title">
+      <button type="button" class="ls-close" id="ls-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+      <div id="ls-main">
+        <h3 id="ls-title">Log in or sign up to Get2Fly</h3>
+        <button type="button" class="ls-btn ls-google" id="ls-google"><span class="ls-gicon"><svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.3 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 10.8 0 12.5s.7 2.8 1.9 5.2l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.3-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg></span>Continue with Google</button>
+        <button type="button" class="ls-btn" id="ls-mail"><i class="fa-solid fa-envelope"></i>Continue with E-mail</button>
+        <button type="button" class="ls-btn ls-fb" id="ls-fb"><i class="fa-brands fa-facebook"></i>Continue with Facebook</button>
+        <p class="ls-terms">By proceeding, I acknowledge that I have read and agree to Get2Fly's <a href="terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Statement</a></p>
+      </div>
+      <div id="ls-email" hidden>
+        <button type="button" class="ls-back" id="ls-back" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button>
+        <h3 id="ls-etitle">Log in</h3>
+        <div class="ls-tabs"><button type="button" data-mode="login" class="on">Log in</button><button type="button" data-mode="signup">Create account</button></div>
+        <form id="ls-form">
+          <input type="text" id="ls-name" placeholder="Full name" autocomplete="name" hidden>
+          <input type="email" id="ls-emailin" placeholder="Email" autocomplete="email" required>
+          <input type="password" id="ls-pass" placeholder="Password (at least 6 characters)" autocomplete="current-password" minlength="6" required>
+          <button type="submit" class="ls-btn ls-submit" id="ls-submit">Log in</button>
+        </form>
+        <button type="button" class="ls-link" id="ls-forgot">Forgot password?</button>
+      </div>
+      <div id="ls-reset" hidden>
+        <h3>Set a new password</h3>
+        <form id="ls-rform">
+          <input type="password" id="ls-newpass" placeholder="New password (at least 6 characters)" autocomplete="new-password" minlength="6" required>
+          <button type="submit" class="ls-btn ls-submit">Save password</button>
+        </form>
+      </div>
+      <p class="ls-msg" id="ls-msg" role="status"></p>
+    </div>
+  </div>
+
   <!-- Account area (front-end only) -->
   <div id="app-view" hidden>
     <div class="av-wrap">
@@ -1832,7 +1872,7 @@
       const SUPABASE_ANON_KEY = 'sb_publishable_-RI5tBwN5GOdp-SixcCf2A_feSRH1P_';
       const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      const loggedOutView = document.getElementById('logged-out-view');
+      let currentUser = null;
       const loggedInView = document.getElementById('logged-in-view');
       const userEmailDisplay = document.getElementById('user-email-display');
       const userAvatarImg = document.getElementById('user-avatar-display');
@@ -1844,41 +1884,32 @@
         handleSupabaseAuthChange(session);
       }
 
+      const userName = u => (u.user_metadata && (u.user_metadata.full_name || u.user_metadata.name)) || (u.email || '').split('@')[0] || 'Traveler';
+      const avatarFor = u => {
+        const m = u.user_metadata || {}, url = m.avatar_url || m.picture;
+        if (url) return url;
+        const ch = encodeURIComponent((userName(u)[0] || 'G').toUpperCase());
+        return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23FF8A00'/%3E%3Ctext x='20' y='27' font-size='20' font-family='Arial' font-weight='700' text-anchor='middle' fill='white'%3E${ch}%3C/text%3E%3C/svg%3E`;
+      };
       function handleSupabaseAuthChange(session) {
-        if (session) {
-          loggedOutView.style.display = 'none';
+        currentUser = session ? session.user : null;
+        if (currentUser) {
           loggedInView.style.display = 'block';
-          userEmailDisplay.textContent = session.user.email;
-
-          const metadata = session.user.user_metadata;
-          const avatarUrl = metadata.avatar_url || metadata.picture;
-          userAvatarImg.src = avatarUrl || 'https://via.placeholder.com/28';
+          userEmailDisplay.textContent = currentUser.email || userName(currentUser);
+          userAvatarImg.src = avatarFor(currentUser);
         } else {
-          loggedOutView.style.display = 'flex';
           loggedInView.style.display = 'none';
           userEmailDisplay.textContent = '';
-          userAvatarImg.src = '';
+          userAvatarImg.removeAttribute('src');
         }
+        if (typeof refreshAccount === 'function') refreshAccount();
       }
 
       checkSupabaseSession();
 
       supabase.auth.onAuthStateChange((event, session) => {
         handleSupabaseAuthChange(session);
-      });
-
-      document.getElementById('google-login-btn').addEventListener('click', async () => {
-        await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: { redirectTo: 'https://get2fly.com' }
-        });
-      });
-
-      document.getElementById('fb-login-btn').addEventListener('click', async () => {
-        await supabase.auth.signInWithOAuth({
-          provider: 'facebook',
-          options: { redirectTo: 'https://get2fly.com' }
-        });
+        if (event === 'PASSWORD_RECOVERY') openRecovery();
       });
 
       profileTrigger.addEventListener('click', (e) => {
@@ -1894,7 +1925,6 @@
 
       document.getElementById('logout-btn').addEventListener('click', async () => {
         await supabase.auth.signOut();
-        window.location.href = 'https://get2fly.com';
       });
       
       // Multi-Region Currency Exchange Matrix (Base: BHD)
@@ -2467,7 +2497,7 @@
       const row=(i,l,a,v)=>`<button type="button" class="av-row" data-act="${a}"><i class="fa-solid ${i}"></i><span>${l}</span><em>${esc(v||'')}</em><i class="fa-solid fa-chevron-right"></i></button>`;
       const empty=(i,t,s,cta,act)=>`<div class="av-empty"><i class="fa-solid ${i}"></i><h4>${t}</h4><p>${s}</p>${cta?`<button type="button" class="av-btn" data-act="${act}">${cta}</button>`:''}</div>`;
       const card=(t,sub,btns)=>`<div class="av-card"><div><b>${t}</b><small>${sub}</small></div><div>${btns}</div></div>`;
-      const completion=()=>{const p=LS('profile',{});return ([p.name,p.email,p.phone].filter(Boolean).length+(LS('travelers',[]).length?1:0))*25;};
+      const completion=()=>{const p=LS('profile',{}),u=currentUser;return ([p.name||(u&&userName(u)),p.email||(u&&u.email),p.phone].filter(Boolean).length+(LS('travelers',[]).length?1:0))*25;};
       function setRoute(o,d){
         searchState.origin=o; searchState.destination=d;
         document.getElementById('origin-city-display').textContent=o.city;
@@ -2484,9 +2514,11 @@
         language:['Language','English is the only language for now. More languages are planned.']
       };
       const screens={
-        account(){const p=LS('profile',{}),pc=completion();
-          return ['My Account',`<div class="av-hero"><div class="av-avatar">${esc((p.name||'G').trim().charAt(0).toUpperCase())}</div><h3>Hello, ${esc(p.name||'Guest')}</h3><p>${esc(p.email||'Add your details to book faster')}</p>
-          <div class="av-prog" data-act="go:profile"><div class="bar"><i style="width:${pc}%"></i></div><b>Complete your profile · ${pc}%</b><small>Add your details to speed up bookings.</small></div></div>
+        account(){const p=LS('profile',{}),pc=completion(),u=currentUser;
+          const hero=u?`<div class="av-hero"><div class="av-avatar" style="background:none;padding:0"><img src="${esc(avatarFor(u))}" alt="" style="width:68px;height:68px;border-radius:50%;object-fit:cover"></div><h3>Hello, ${esc(p.name||userName(u))}</h3><p>${esc(u.email||'')}</p>
+          <div class="av-prog" data-act="go:profile"><div class="bar"><i style="width:${pc}%"></i></div><b>Complete your profile · ${pc}%</b><small>Add your details to speed up bookings.</small></div></div>`
+          :`<div class="av-hero"><h3 style="font-size:1.05rem;font-weight:600;line-height:1.4;margin:6px 8px 0">Hello! Sign up now to enjoy faster bookings and exclusive offers on Get2Fly.</h3><button type="button" class="av-login-btn" data-act="login">Sign up / Log in</button></div>`;
+          return ['My Account',`${hero}
           <div class="av-tiles"><button type="button" data-act="go:travelers"><i class="fa-solid fa-user-group"></i>My Travelers</button><button type="button" data-act="go:alerts"><i class="fa-solid fa-bell"></i>Price Alert</button><button type="button" data-act="go:favorites"><i class="fa-solid fa-heart"></i>My Favorites</button></div>
           ${row('fa-ticket','My Bookings','go:bookings')}${row('fa-list-ul','My Reservations','go:reservations')}${row('fa-clock-rotate-left','My Searches','go:searches')}${row('fa-tags','Deals','link:deals')}${row('fa-rss','Blogs','go:blogs')}${row('fa-coins','Rewards','go:rewards','Coming soon')}
           <div class="av-sec">Settings</div>
@@ -2494,7 +2526,7 @@
           <div class="av-sec">Other</div>
           ${row('fa-phone','Contact','link:contact')}${row('fa-circle-info','About Get2Fly','go:about')}${row('fa-circle-question','F.A.Q.','link:faq')}${row('fa-lock','Privacy','href:privacy.html')}${row('fa-file-lines','Terms and Conditions','href:terms.html')}${row('fa-rotate-left','Refund Policy','href:refund.html')}
           <div class="av-sec">About the app</div>
-          ${row('fa-layer-group','App Version','','1.0.0')}${row('fa-pen-to-square','Share Your Feedback','go:feedback')}${row('fa-power-off','Sign out','signout')}`];},
+          ${row('fa-layer-group','App Version','','1.0.0')}${row('fa-pen-to-square','Share Your Feedback','go:feedback')}${u?row('fa-power-off','Sign out','signout'):''}`];},
         profile(){const p=LS('profile',{});
           return ['My Profile',`<form class="av-form" data-form="profile"><label>Full name<input name="name" value="${esc(p.name)}" required></label><label>Email<input type="email" name="email" value="${esc(p.email)}"></label><label>Phone / WhatsApp<input type="tel" name="phone" value="${esc(p.phone)}"></label><button class="av-btn">Save</button><p class="av-note">Saved on this device only until accounts are connected.</p></form>`];},
         travelers(){const t=LS('travelers',[]);
@@ -2556,7 +2588,8 @@
         else if(a==='favadd'){const f=LS('favs',[]),o=searchState.origin,d=searchState.destination;if(!f.some(k=>k.o.iata===o.iata&&k.d.iata===d.iata)){f.unshift({o,d});SV('favs',f);}render();}
         else if(a==='favgo'){const k=LS('favs',[])[+x];closeView();setRoute(k.o,k.d);window.scrollTo({top:0,behavior:'smooth'});}
         else if(a==='sgo'){const k=LS('searches',[])[+x];closeView();setRoute(k.o,k.d);if(k.date>=todayIso){dIn.value=k.date;showDate('depart',k.date);}window.scrollTo({top:0,behavior:'smooth'});}
-        else if(a==='signout'){if(confirm('Sign out and clear saved data on this device?')){['profile','prefs'].forEach(k=>SV(k,{}));['travelers','alerts','favs','searches','bookings'].forEach(k=>SV(k,[]));stack=['account'];render();}}
+        else if(a==='login'){openLogin();}
+        else if(a==='signout'){if(confirm('Sign out of Get2Fly?')) supabase.auth.signOut();}
       });
       av.addEventListener('submit',e=>{
         e.preventDefault();
@@ -2590,6 +2623,62 @@
           fare:document.getElementById('checkout-fare-summary').textContent.replace('Total Fare: ','').replace(/ \(.*$/,'')});
         SV('bookings',b);
       };
+      // ===== Sign in / sign up sheet (Supabase) =====
+      const ls = document.getElementById('login-sheet'), lsMsg = document.getElementById('ls-msg');
+      let lsMode = 'login';
+      const showMsg = (t, cls) => { lsMsg.textContent = t || ''; lsMsg.className = 'ls-msg ' + (cls || ''); };
+      const lsPanel = p => ['main', 'email', 'reset'].forEach(k => { document.getElementById('ls-' + k).hidden = (k !== p); });
+      function openLogin() { lsPanel('main'); showMsg(''); ls.hidden = false; document.body.style.overflow = 'hidden'; }
+      function closeLogin() { ls.hidden = true; if (av.hidden && !rpOpen) document.body.style.overflow = ''; }
+      function openRecovery() { openLogin(); lsPanel('reset'); }
+      function refreshAccount() { if (currentUser && !ls.hidden && document.getElementById('ls-reset').hidden) closeLogin(); if (!av.hidden && stack.length) render(); }
+      function setMode(m) {
+        lsMode = m;
+        document.querySelectorAll('.ls-tabs button').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
+        document.getElementById('ls-name').hidden = m !== 'signup';
+        document.getElementById('ls-etitle').textContent = m === 'signup' ? 'Create your account' : 'Log in';
+        document.getElementById('ls-submit').textContent = m === 'signup' ? 'Create account' : 'Log in';
+        document.getElementById('ls-pass').autocomplete = m === 'signup' ? 'new-password' : 'current-password';
+        showMsg('');
+      }
+      const oauth = provider => supabase.auth.signInWithOAuth({ provider, options: { redirectTo: location.origin + '/' } });
+      document.getElementById('ls-google').addEventListener('click', () => oauth('google'));
+      document.getElementById('ls-fb').addEventListener('click', () => oauth('facebook'));
+      document.getElementById('ls-mail').addEventListener('click', () => { setMode('login'); lsPanel('email'); });
+      document.getElementById('ls-back').addEventListener('click', () => { lsPanel('main'); showMsg(''); });
+      document.getElementById('ls-close').addEventListener('click', closeLogin);
+      ls.querySelector('.ls-backdrop').addEventListener('click', closeLogin);
+      document.querySelectorAll('.ls-tabs button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+      document.getElementById('ls-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const email = document.getElementById('ls-emailin').value.trim(), pass = document.getElementById('ls-pass').value, btn = document.getElementById('ls-submit');
+        btn.disabled = true; showMsg('Please wait…');
+        try {
+          if (lsMode === 'signup') {
+            const name = document.getElementById('ls-name').value.trim();
+            const { data, error } = await supabase.auth.signUp({ email, password: pass, options: { data: { full_name: name }, emailRedirectTo: location.origin + '/' } });
+            if (error) throw error;
+            showMsg(data.session ? '' : 'Almost done! Check your email and confirm your address, then log in.', 'ok');
+          } else {
+            const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+            if (error) throw error;
+            showMsg('');
+          }
+        } catch (err) { showMsg(err.message || 'Something went wrong. Please try again.', 'err'); }
+        btn.disabled = false;
+      });
+      document.getElementById('ls-forgot').addEventListener('click', async () => {
+        const email = document.getElementById('ls-emailin').value.trim();
+        if (!email) { showMsg('Enter your email above first.', 'err'); return; }
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/' });
+        showMsg(error ? error.message : 'We sent a password reset link to your email.', error ? 'err' : 'ok');
+      });
+      document.getElementById('ls-rform').addEventListener('submit', async e => {
+        e.preventDefault();
+        const { error } = await supabase.auth.updateUser({ password: document.getElementById('ls-newpass').value });
+        showMsg(error ? error.message : 'Password updated. You are signed in.', error ? 'err' : 'ok');
+        if (!error) setTimeout(() => { lsPanel('main'); closeLogin(); }, 1400);
+      });
     });
   </script>
 </body>
