@@ -1886,7 +1886,20 @@
         }
         if (typeof refreshAccount === 'function') refreshAccount();
       }
+     // Example: Verify OTP code submitted by user
+async function verifyOtpCode(email, otpToken, type = 'signup') {
+  const { session, error } = await supabase.auth.verifyOtp({
+    email: email,
+    token: otpToken,
+    type: type // 'signup', 'recovery', 'magiclink', or 'email_change'
+  });
 
+  if (error) {
+    alert(`Verification failed: ${error.message}`);
+  } else {
+    alert('🎉 Verification successful!');
+  }
+}
       checkSupabaseSession();
 
       supabase.auth.onAuthStateChange((event, session) => {
