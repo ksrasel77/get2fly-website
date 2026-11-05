@@ -1810,9 +1810,9 @@
       <div id="ls-reset" hidden>
         <button type="button" class="ls-back" id="ls-rback" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button>
         <h3>Reset password</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Enter the 6-digit code sent to your email and your new password.</p>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Enter the 8-digit code sent to your email and your new password.</p>
         <form id="ls-rform">
-          <input type="text" id="ls-otpcode" placeholder="6-digit verification code" maxlength="6" inputmode="numeric" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 0.95rem;">
+          <input type="text" id="ls-otpcode" placeholder="6-digit verification code" maxlength="8" inputmode="numeric" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 0.95rem;">
           <input type="password" id="ls-newpass" placeholder="New password (at least 6 characters)" autocomplete="new-password" minlength="6" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 0.95rem;">
           <button type="submit" class="ls-btn ls-submit" style="background: #10b981;">Save new password</button>
         </form>
@@ -2781,7 +2781,7 @@ document.getElementById('ls-forgot').addEventListener('click', async () => {
     msg.textContent = 'Error: ' + error.message;
     msg.style.color = '#dc2626';
   } else {
-    msg.textContent = '🎉 Verification code sent! Check your inbox.';
+    msg.textContent = ' Verification code sent! Check your inbox.';
     msg.style.color = '#16a34a';
     
     // Switch view to the Reset/OTP form
@@ -2823,7 +2823,7 @@ document.getElementById('ls-rform').addEventListener('submit', async (e) => {
     msg.textContent = 'Error saving password: ' + updateError.message;
     msg.style.color = '#dc2626';
   } else {
-    msg.textContent = '🎉 Password successfully updated! Logged in.';
+    msg.textContent = ' Password successfully updated! Logged in.';
     msg.style.color = '#16a34a';
     
     setTimeout(() => {
