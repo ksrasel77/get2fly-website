@@ -1806,11 +1806,15 @@
         </form>
         <button type="button" class="ls-link" id="ls-forgot">Forgot password?</button>
       </div>
+      <!-- Reset Password / OTP Code View (Updated here) -->
       <div id="ls-reset" hidden>
-        <h3>Set a new password</h3>
+        <button type="button" class="ls-back" id="ls-rback" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button>
+        <h3>Reset password</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Enter the 6-digit code sent to your email and your new password.</p>
         <form id="ls-rform">
-          <input type="password" id="ls-newpass" placeholder="New password (at least 6 characters)" autocomplete="new-password" minlength="6" required>
-          <button type="submit" class="ls-btn ls-submit">Save password</button>
+          <input type="text" id="ls-otpcode" placeholder="6-digit verification code" maxlength="6" inputmode="numeric" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 0.95rem;">
+          <input type="password" id="ls-newpass" placeholder="New password (at least 6 characters)" autocomplete="new-password" minlength="6" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 0.95rem;">
+          <button type="submit" class="ls-btn ls-submit" style="background: #10b981;">Save new password</button>
         </form>
       </div>
       <p class="ls-msg" id="ls-msg" role="status"></p>
@@ -2757,18 +2761,83 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
         } catch (err) { showMsg(err.message || 'Something went wrong. Please try again.', 'err'); }
         btn.disabled = false;
       });
-      document.getElementById('ls-forgot').addEventListener('click', async () => {
-        const email = document.getElementById('ls-emailin').value.trim();
-        if (!email) { showMsg('Enter your email above first.', 'err'); return; }
-        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/' });
-        showMsg(error ? error.message : 'We sent a password reset link to your email.', error ? 'err' : 'ok');
-      });
-      document.getElementById('ls-rform').addEventListener('submit', async e => {
-        e.preventDefault();
-        const { error } = await supabase.auth.updateUser({ password: document.getElementById('ls-newpass').value });
-        showMsg(error ? error.message : 'Password updated. You are signed in.', error ? 'err' : 'ok');
-        if (!error) setTimeout(() => { lsPanel('main'); closeLogin(); }, 1400);
-      });
+      // 1. When user clicks "Forgot password?", send OTP code to their entered email
+document.getElementById('ls-forgot').addEventListener('click', async () => {
+  const email = document.getElementById('ls-emailin').value.trim();
+  const msg = document.getElementById('ls-msg');
+
+  if (!email) {
+    msg.textContent = 'Please enter your email address first.';
+    msg.style.color = '#dc2626';
+    return;
+  }
+
+  msg.textContent = 'Sending verification code...';
+  msg.style.color = '#2563eb';
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+  if (error) {
+    msg.textContent = 'Error: ' + error.message;
+    msg.style.color = '#dc2626';
+  } else {
+    msg.textContent = '🎉 Verification code sent! Check your inbox.';
+    msg.style.color = '#16a34a';
+    
+    // Switch view to the Reset/OTP form
+    document.getElementById('ls-email').hidden = true;
+    document.getElementById('ls-reset').hidden = false;
+  }
+});
+
+// 2. When user submits the code & new password, verify with Supabase
+document.getElementById('ls-rform').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('ls-emailin').value.trim();
+  const otpToken = document.getElementById('ls-otpcode').value.trim();
+  const newPassword = document.getElementById('ls-newpass').value;
+  const msg = document.getElementById('ls-msg');
+
+  msg.textContent = 'Verifying code...';
+  msg.style.color = '#2563eb';
+
+  // Step A: Verify the OTP code for password recovery
+  const { error: verifyError } = await supabase.auth.verifyOtp({
+    email: email,
+    token: otpToken,
+    type: 'recovery'
+  });
+
+  if (verifyError) {
+    msg.textContent = 'Invalid code: ' + verifyError.message;
+    msg.style.color = '#dc2626';
+    return;
+  }
+
+  // Step B: Update user password
+  const { error: updateError } = await supabase.auth.updateUser({
+    password: newPassword
+  });
+
+  if (updateError) {
+    msg.textContent = 'Error saving password: ' + updateError.message;
+    msg.style.color = '#dc2626';
+  } else {
+    msg.textContent = '🎉 Password successfully updated! Logged in.';
+    msg.style.color = '#16a34a';
+    
+    setTimeout(() => {
+      document.getElementById('login-sheet').hidden = true;
+    }, 1500);
+  }
+});
+
+// Back button handler for reset view
+document.getElementById('ls-rback')?.addEventListener('click', () => {
+  document.getElementById('ls-reset').hidden = true;
+  document.getElementById('ls-email').hidden = false;
+  document.getElementById('ls-msg').textContent = '';
+});
     });
   </script>
 </body>
