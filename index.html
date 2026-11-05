@@ -1284,6 +1284,33 @@
     .ls-msg{text-align:center;font-size:.88rem;margin-top:8px;min-height:1.2em}.ls-msg.err{color:#b91c1c}.ls-msg.ok{color:#166534}
     .av-login-btn{background:#fff;color:var(--brand-dark);border:none;border-radius:30px;padding:13px 34px;font-weight:800;font-size:1.05rem;cursor:pointer;margin-top:14px}
     @media(max-width:640px){#user-email-display{display:none}}
+
+    /* Checkout page */
+    #co{position:fixed;inset:0;z-index:1100;background:var(--bg-light);overflow-y:auto}
+    .co-top{position:sticky;top:0;z-index:5;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.06);display:flex;align-items:center;gap:12px;padding:10px 14px}
+    .co-top button{border:none;background:var(--bg-light);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1rem}.co-top b{font-size:1.1rem}
+    .co-body{max-width:760px;margin:0 auto;padding:14px 14px 130px}
+    .co-card{background:#fff;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(11,37,69,.06)}
+    details.co-card{border:none;border-radius:16px;padding:16px;margin-bottom:14px;background:#fff}
+    details.co-card>summary{font-weight:800;font-size:1.05rem;display:flex;justify-content:space-between;align-items:center;list-style:none;cursor:pointer}
+    details.co-card>summary::-webkit-details-marker{display:none}details.co-card>summary::after{content:'▾';color:var(--text-muted)}
+    details.co-card[open]>summary::after{content:'▴'}
+    .co-card h3{font-size:1.1rem;margin-bottom:12px}
+    .co-banner{background:#0B2545;color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px;font-size:.95rem}.co-banner a{color:#fff;text-decoration:underline;font-weight:700}
+    .co-field{margin-bottom:12px}.co-field label{display:block;font-size:.78rem;font-weight:700;color:var(--text-muted);margin-bottom:5px}
+    .co-field input,.co-field select{width:100%;padding:14px;border:1.5px solid var(--border-color);border-radius:12px;font:inherit;background:#fff}
+    .co-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.co-phone{display:grid;grid-template-columns:140px 1fr;gap:8px}
+    .co-radios{display:flex;gap:10px}.co-radios label{flex:1;margin:0;border:1.5px solid var(--border-color);border-radius:12px;padding:13px;text-align:center;font-weight:600;color:var(--brand-dark);cursor:pointer;font-size:.95rem}
+    .co-radios label{position:relative}.co-radios input{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;left:50%;bottom:0}.co-radios label:has(input:checked){border-color:var(--brand-blue);background:#e8f3ff;color:var(--brand-blue)}
+    .co-check{display:flex;gap:10px;align-items:flex-start;font-size:.9rem;margin:6px 0;cursor:pointer}.co-check input{width:18px;height:18px;margin-top:2px;accent-color:var(--primary)}
+    .co-bag{background:#f8fafc;border:1px solid var(--border-color);border-radius:12px;padding:12px;font-size:.88rem;line-height:1.7}.co-bag b{display:block;margin-top:4px}
+    .co-foot{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border-color);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:6}
+    .co-total small{display:block;color:var(--text-muted);font-size:.74rem}.co-total b{font-size:1.4rem}
+    .co-next{background:var(--primary);color:#fff;border:none;border-radius:30px;padding:15px 28px;font-weight:800;font-size:1rem;cursor:pointer;flex:1;max-width:260px}.co-next:disabled{opacity:.6}
+    .co-err{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:12px;padding:12px;margin-bottom:12px;font-size:.9rem}
+    .co-ok{text-align:center;padding:26px 6px}.co-ok .tick{width:72px;height:72px;border-radius:50%;background:#dcfce7;color:#16a34a;font-size:2rem;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+    .co-ref{font-size:2rem;font-weight:800;letter-spacing:3px;color:var(--brand-dark);background:#fff;border:2px dashed var(--border-color);border-radius:14px;padding:12px;margin:14px 0}
+    .co-line{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--border-color);font-size:.92rem}.co-line:last-child{border:none}.co-line span{color:var(--text-muted)}
   </style>
 </head>
 <body>
@@ -1711,56 +1738,11 @@
     </div>
   </div>
 
-  <!-- Passenger Checkout Modal -->
-  <div class="checkout-overlay" id="checkout-modal">
-    <div class="checkout-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <h3 style="font-size:1.2rem; font-weight:800;" id="checkout-airline-title">Passenger Details</h3>
-        <button type="button" class="close-drawer-btn" onclick="closeCheckout()">&times;</button>
-      </div>
-
-      <div style="background:#e0f2fe; padding:12px; border-radius:10px; margin-bottom:16px; font-size:0.85rem; color:#0369a1; font-weight:700;" id="checkout-fare-summary">
-        Selected Fare: $140 USD
-      </div>
-
-      <form id="passenger-checkout-form">
-        <div class="checkout-form-group">
-          <label>Full Name (as in Passport)</label>
-          <input type="text" required placeholder="e.g. Rasel Sheikh">
-        </div>
-
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-          <div class="checkout-form-group">
-            <label>Passport / National ID</label>
-            <input type="text" required placeholder="A12345678">
-          </div>
-          <div class="checkout-form-group">
-            <label>Nationality</label>
-            <input type="text" required placeholder="e.g. Bahraini / Bangladeshi">
-          </div>
-        </div>
-
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-          <div class="checkout-form-group">
-            <label>Email Address</label>
-            <input type="email" required placeholder="name@example.com">
-          </div>
-          <div class="checkout-form-group">
-            <label>Phone / WhatsApp</label>
-            <input type="tel" required placeholder="+973 3300 0000">
-          </div>
-        </div>
-
-        <label class="consent">
-          <input type="checkbox" required oninvalid="this.setCustomValidity('Please accept the Terms and Privacy Policy to continue.')" onchange="this.setCustomValidity('')">
-          <span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>, <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="refund.html" target="_blank" rel="noopener">Refund Policy</a>.</span>
-        </label>
-
-        <button type="submit" class="cta-search-btn" style="margin-top:10px;">
-          <i class="fa-solid fa-credit-card"></i> Proceed to Payment
-        </button>
-      </form>
-    </div>
+  <!-- Checkout page: traveler details, review, confirmation -->
+  <div id="co" hidden>
+    <div class="co-top"><button type="button" id="co-back" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button><b id="co-title">Traveler Details</b></div>
+    <div class="co-body" id="co-body"></div>
+    <div class="co-foot" id="co-foot"><div class="co-total" id="co-total"></div><button type="button" class="co-next" id="co-next">Continue</button></div>
   </div>
 
   <!-- Results page: loading screen, filters and fares -->
@@ -2273,62 +2255,159 @@
         window.selectedOfferId = b.dataset.offer; openCheckout(b.dataset.airline, b.dataset.price);
       });
 
-      // Checkout Modal Handlers
-      window.openCheckout = function(airline, priceStr) {
-        document.getElementById('checkout-airline-title').textContent = `Book Flight with ${airline}`;
-        document.getElementById('checkout-fare-summary').textContent = `Total Fare: ${priceStr} (${searchState.cabinClass} Class)`;
-        document.getElementById('checkout-modal').style.display = 'flex';
-      };
+      // ---- Checkout: traveler details, review and confirmation ----
+      const CO_C = 'AF|Afghanistan|93;AL|Albania|355;DZ|Algeria|213;AR|Argentina|54;AM|Armenia|374;AU|Australia|61;AT|Austria|43;AZ|Azerbaijan|994;BH|Bahrain|973;BD|Bangladesh|880;BY|Belarus|375;BE|Belgium|32;BT|Bhutan|975;BR|Brazil|55;BN|Brunei|673;BG|Bulgaria|359;KH|Cambodia|855;CM|Cameroon|237;CA|Canada|1;CN|China|86;CO|Colombia|57;HR|Croatia|385;CY|Cyprus|357;CZ|Czechia|420;DK|Denmark|45;EG|Egypt|20;ET|Ethiopia|251;FI|Finland|358;FR|France|33;GE|Georgia|995;DE|Germany|49;GH|Ghana|233;GR|Greece|30;HK|Hong Kong|852;HU|Hungary|36;IN|India|91;ID|Indonesia|62;IR|Iran|98;IQ|Iraq|964;IE|Ireland|353;IL|Israel|972;IT|Italy|39;JP|Japan|81;JO|Jordan|962;KZ|Kazakhstan|7;KE|Kenya|254;KW|Kuwait|965;KG|Kyrgyzstan|996;LA|Laos|856;LB|Lebanon|961;LY|Libya|218;MY|Malaysia|60;MV|Maldives|960;MX|Mexico|52;MA|Morocco|212;MM|Myanmar|95;NP|Nepal|977;NL|Netherlands|31;NZ|New Zealand|64;NG|Nigeria|234;NO|Norway|47;OM|Oman|968;PK|Pakistan|92;PS|Palestine|970;PH|Philippines|63;PL|Poland|48;PT|Portugal|351;QA|Qatar|974;RO|Romania|40;RU|Russia|7;SA|Saudi Arabia|966;RS|Serbia|381;SG|Singapore|65;SK|Slovakia|421;ZA|South Africa|27;KR|South Korea|82;ES|Spain|34;LK|Sri Lanka|94;SD|Sudan|249;SE|Sweden|46;CH|Switzerland|41;SY|Syria|963;TW|Taiwan|886;TZ|Tanzania|255;TH|Thailand|66;TN|Tunisia|216;TR|Turkey|90;UG|Uganda|256;UA|Ukraine|380;AE|United Arab Emirates|971;GB|United Kingdom|44;US|United States|1;UZ|Uzbekistan|998;VN|Vietnam|84;YE|Yemen|967'.split(';').map(x => { const [i, n, d] = x.split('|'); return { i, n, d }; });
+      const flagOf = iso => String.fromCodePoint(...[...iso].map(c => 127397 + c.charCodeAt(0)));
+      const coEl = document.getElementById('co'), coBody = document.getElementById('co-body'), coNext = document.getElementById('co-next');
+      let coOpen = false, CO = null;
+      const ord = n => ['1st', '2nd', '3rd'][n - 1] || n + 'th';
+      const blankPax = (type, n) => ({ type, n, title: '', gender: '', first: '', last: '', dob: '', nat: '', passNo: '', passExp: '', save: false, saved: '' });
+      function coNew(o) {
+        const pax = [];
+        for (let i = 1; i <= searchState.adults; i++) pax.push(blankPax('adult', i));
+        for (let i = 1; i <= searchState.children; i++) pax.push(blankPax('child', i));
+        return { offer: o, step: 1, pax, contact: { email: currentUser ? currentUser.email : '', dial: '973', phone: '' }, agree: false, err: '', busy: false, result: null };
+      }
+      const shiftYears = (d, n) => { const x = new Date(d + 'T12:00:00'); x.setFullYear(x.getFullYear() + n); return x.toISOString().slice(0, 10); };
+      const yearsAt = (dob, day) => { const a = new Date(dob), b = new Date(day); let y = b.getFullYear() - a.getFullYear(); if (b.getMonth() < a.getMonth() || (b.getMonth() === a.getMonth() && b.getDate() < a.getDate())) y--; return y; };
+      const coSlices = o => o.slices.map((x, k) => `<div class="rp-slice"><div><b>${fmtTime(x.dep)}</b><small>${esc(x.from)}</small></div>
+        <div class="rp-mid"><span>${o.slices.length > 1 ? (k ? 'Return · ' : 'Outbound · ') : ''}${fmtDur(x.duration)}</span><div class="line"></div><span>${x.stops ? x.stops + (x.stops > 1 ? ' stops' : ' stop') : 'Direct'}</span></div>
+        <div><b>${fmtTime(x.arr)}</b><small>${esc(x.to)}</small></div>
+        <div class="rp-path">${esc(x.dep.slice(0, 10))} · ${esc([x.from, ...(x.via || []), x.to].join(' › '))} · ${esc(x.flights)}</div></div>`).join('');
+      const bagBox = o => `<div class="co-bag"><b style="margin:0">Baggage allowance</b>${o.baggage.checked ? o.baggage.checked + ' × checked bag included' : 'No checked bag included'}<br>${o.baggage.carryOn ? o.baggage.carryOn + ' × cabin bag included' : 'Cabin bag: please check with the airline'}<br><small style="color:var(--text-muted)">Weight limits are set by the airline.</small>
+        ${o.refundable === true ? '<b style="color:#166534">Refundable before departure</b>' : o.refundable === false ? '<b>Non-refundable fare</b>' : ''}</div>`;
 
-      window.closeCheckout = function() {
-        document.getElementById('checkout-modal').style.display = 'none';
-      };
-
-      document.getElementById('passenger-checkout-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const submitBtn = this.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing Booking...`;
-
-        const fullName = this.querySelector('input[placeholder*="Rasel"]').value;
-        const passport = this.querySelector('input[placeholder*="A12345678"]').value;
-        const email = this.querySelector('input[type="email"]').value;
-        const phone = this.querySelector('input[type="tel"]').value;
-
-        try {
-          const res = await fetch('/api/book', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              offerId: window.selectedOfferId,
-              passengerDetails: {
-                fullName,
-                passport,
-                email,
-                phone,
-                bornOn: '1995-05-10'
-              }
-            })
-          });
-
-          const data = await res.json();
-          if (!res.ok || data.error) {
-            alert(`Booking Failed: ${data.error || 'Please check details.'}`);
-          } else {
-            const confirmedPNR = data.bookingReference;
-            if (window.saveBooking) saveBooking(confirmedPNR);
-            alert(`🎉 BOOKING CONFIRMED!\n\nAirline PNR Reference: ${confirmedPNR}\nduffel Order ID: ${data.orderId}\nTotal Paid: ${data.currency} ${data.totalAmount}`);
-            this.reset();
-            closeCheckout();
-          }
-        } catch (err) {
-          alert('Network error connecting to booking server.');
-        } finally {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = `<i class="fa-solid fa-credit-card"></i> Proceed to Payment`;
+      function paxCard(p, i) {
+        const o = CO.offer, dep = o.slices[0].dep.slice(0, 10), req = o.docsRequired ? 'required' : '';
+        const dobMin = p.type === 'child' ? shiftYears(dep, -12) : '1900-01-01', dobMax = p.type === 'child' ? shiftYears(dep, -2) : shiftYears(dep, -12);
+        const saved = LS('travelers', []).map((t, k) => ({ t, k })).filter(x => x.t.type.toLowerCase() === p.type);
+        const f = (k, label, input) => `<div class="co-field"><label>${label}</label>${input}</div>`;
+        const inp = (k, type, extra) => `<input type="${type}" data-i="${i}" data-k="${k}" value="${esc(p[k])}" ${extra || ''}>`;
+        return `<details class="co-card" open><summary>${ord(p.n)} ${p.type === 'adult' ? 'Adult' : 'Child'}</summary><div style="margin-top:14px">
+          ${saved.length ? f('saved', 'Saved travelers', `<select data-i="${i}" data-k="saved"><option value="">Choose a saved traveler</option>${saved.map(x => `<option value="${x.k}" ${String(x.k) === String(p.saved) ? 'selected' : ''}>${esc(x.t.first + ' ' + x.t.last)}</option>`).join('')}</select>`) : ''}
+          ${f('title', 'Title', `<select data-i="${i}" data-k="title" required><option value="">Select</option>${[['mr', 'Mr'], ['ms', 'Ms'], ['mrs', 'Mrs'], ['miss', 'Miss']].map(([v, l]) => `<option value="${v}" ${p.title === v ? 'selected' : ''}>${l}</option>`).join('')}</select>`)}
+          ${f('first', 'First name (as on passport)', inp('first', 'text', 'required maxlength="40" autocomplete="off" pattern="[A-Za-z][A-Za-z \'\\-]*" title="Use English letters as shown on the passport"'))}
+          ${f('last', 'Last name (as on passport)', inp('last', 'text', 'required maxlength="40" autocomplete="off" pattern="[A-Za-z][A-Za-z \'\\-]*" title="Use English letters as shown on the passport"'))}
+          ${f('dob', 'Date of birth', inp('dob', 'date', `required min="${dobMin}" max="${dobMax}"`))}
+          <div class="co-field"><label>Gender</label><div class="co-radios"><label><input type="radio" name="g${i}" data-i="${i}" data-k="gender" value="m" ${p.gender === 'm' ? 'checked' : ''} required>Male</label><label><input type="radio" name="g${i}" data-i="${i}" data-k="gender" value="f" ${p.gender === 'f' ? 'checked' : ''}>Female</label></div></div>
+          ${f('nat', 'Nationality', `<select data-i="${i}" data-k="nat" required><option value="">Select</option>${CO_C.map(c => `<option value="${c.i}" ${p.nat === c.i ? 'selected' : ''}>${esc(c.n)}</option>`).join('')}</select>`)}
+          ${f('passNo', 'Passport number' + (o.docsRequired ? '' : ' (optional)'), inp('passNo', 'text', `${req} maxlength="20" autocomplete="off" style="text-transform:uppercase"`))}
+          ${f('passExp', 'Passport expiry date' + (o.docsRequired ? '' : ' (optional)'), inp('passExp', 'date', `${req} min="${new Date().toISOString().slice(0, 10)}"`))}
+          <label class="co-check"><input type="checkbox" data-i="${i}" data-k="save" ${p.save ? 'checked' : ''}><span>Add to traveler list</span></label>
+          </div></details>`;
+      }
+      function coRender() {
+        const o = CO.offer, n = CO.pax.length, amt = parseFloat(o.price), c = CO.contact;
+        document.getElementById('co-title').textContent = ['', 'Traveler Details', 'Review and Confirm', 'Booking Confirmed'][CO.step];
+        document.getElementById('co-foot').hidden = CO.step === 3;
+        document.getElementById('co-total').innerHTML = `<small>Total · ${n} traveler${n > 1 ? 's' : ''}, taxes included</small><b>${esc(money(amt, o.currency))}</b>`;
+        coNext.disabled = CO.busy; coNext.textContent = CO.step === 1 ? 'Continue →' : CO.busy ? 'Booking…' : 'Confirm booking';
+        const err = CO.err ? `<div class="co-err">${esc(CO.err)}</div>` : '';
+        if (CO.step === 1) {
+          const two = o.slices.length > 1;
+          coBody.innerHTML = `<details class="co-card"><summary><span>${esc(searchState.origin.city)} ${two ? '⇄' : '→'} ${esc(searchState.destination.city)}<br><small style="font-weight:500;color:var(--text-muted)">${esc(o.airline)} · ${esc(o.slices[0].dep.slice(0, 10))}${two ? ' – ' + esc(o.slices[1].dep.slice(0, 10)) : ''} · ${n} traveler${n > 1 ? 's' : ''}</small></span></summary><div style="margin-top:10px">${coSlices(o)}</div></details>
+            <div class="co-banner">${currentUser ? `Signed in as <b>${esc(currentUser.email)}</b>` : 'Please <a href="#" data-co="login">log in</a> or <a href="#" data-co="login">register</a> for quick process.'}</div>
+            ${err}<form id="co-form" novalidate>
+            <div class="co-card"><h3>Contact details</h3>
+              <div class="co-field"><input type="email" data-c="email" placeholder="E-mail address" value="${esc(c.email)}" required autocomplete="email"></div>
+              <div class="co-phone"><select data-c="dial">${CO_C.map(x => `<option value="${x.d}" ${x.d === c.dial && x.i === (c.iso || (x.d === '973' ? 'BH' : x.i)) ? 'selected' : ''}>${flagOf(x.i)} +${x.d} ${x.i}</option>`).join('')}</select>
+              <input type="tel" inputmode="tel" data-c="phone" placeholder="Mobile number" value="${esc(c.phone)}" required autocomplete="tel-national" style="padding:14px;border:1.5px solid var(--border-color);border-radius:12px;font:inherit;width:100%"></div>
+              <p style="font-size:.8rem;color:var(--text-muted);margin-top:8px">We send your booking details to this email and may contact you on this number.</p></div>
+            ${CO.pax.map(paxCard).join('')}
+            <div class="co-card">${bagBox(o)}</div></form>`;
+        } else if (CO.step === 2) {
+          coBody.innerHTML = `${err}<div class="co-card"><h3>Your flight</h3>${coSlices(o)}${bagBox(o)}</div>
+            <div class="co-card"><h3>Travelers</h3>${CO.pax.map(p => `<div class="co-line"><b>${esc(p.first)} ${esc(p.last)}</b><span>${p.type === 'adult' ? 'Adult' : 'Child'} · ${esc(p.dob)}</span></div>`).join('')}</div>
+            <div class="co-card"><h3>Contact</h3><div class="co-line"><span>E-mail</span><b>${esc(c.email)}</b></div><div class="co-line"><span>Mobile</span><b>+${esc(c.dial)} ${esc(c.phone)}</b></div></div>
+            <div class="co-card"><h3>Price</h3><div class="co-line"><span>${n} traveler${n > 1 ? 's' : ''} · taxes and fees included</span><b>${esc(money(amt, o.currency))}</b></div>
+              ${lastLive ? '' : '<p class="co-err" style="margin:10px 0 0">Test mode: this creates a test booking only. No real ticket is issued and nothing is charged.</p>'}</div>
+            <label class="co-check" style="padding:0 4px"><input type="checkbox" id="co-agree" ${CO.agree ? 'checked' : ''}><span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>, <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="refund.html" target="_blank" rel="noopener">Refund Policy</a>.</span></label>`;
+        } else {
+          const r = CO.result || {};
+          coBody.innerHTML = `<div class="co-ok"><div class="tick"><i class="fa-solid fa-check"></i></div><h2>${r.liveMode ? 'Booking confirmed' : 'Test booking created'}</h2>
+            <p style="color:var(--text-muted)">${r.liveMode ? 'Please save your booking reference.' : 'This was a test: no real ticket was issued and nothing was charged.'}</p>
+            <div class="co-ref">${esc(r.bookingReference)}</div>
+            <div class="co-card" style="text-align:left"><div class="co-line"><span>Flight</span><b>${esc(o.airline)}</b></div><div class="co-line"><span>Route</span><b>${esc(o.slices[0].from)} → ${esc(o.slices[0].to)}</b></div><div class="co-line"><span>Date</span><b>${esc(o.slices[0].dep.slice(0, 10))}</b></div><div class="co-line"><span>Travelers</span><b>${esc(CO.pax.map(p => p.first + ' ' + p.last).join(', '))}</b></div><div class="co-line"><span>Total</span><b>${esc(money(parseFloat(o.price), o.currency))}</b></div></div>
+            <button type="button" class="co-next" style="width:100%;max-width:none;margin-bottom:10px" data-co="bookings">View my bookings</button>
+            <button type="button" class="rp-ghost" style="width:100%;margin:0" data-co="home">Back to home</button></div>`;
         }
+        coEl.scrollTop = 0;
+      }
+      const coBad = (el, msg) => { if (el) { el.setCustomValidity(msg); el.reportValidity(); } return false; };
+      function coValidate() {
+        const f = document.getElementById('co-form'); if (!f.reportValidity()) return false;
+        const o = CO.offer, dep = o.slices[0].dep.slice(0, 10), last = o.slices[o.slices.length - 1].arr.slice(0, 10), q = (i, k) => f.querySelector(`[data-i="${i}"][data-k="${k}"]`);
+        for (let i = 0; i < CO.pax.length; i++) {
+          const p = CO.pax[i], age = yearsAt(p.dob, dep);
+          if (p.type === 'adult' && age < 12) return coBad(q(i, 'dob'), 'Adult travelers must be 12 or older on the travel date.');
+          if (p.type === 'child' && (age < 2 || age > 11)) return coBad(q(i, 'dob'), 'Child travelers must be 2 to 11 years old on the travel date.');
+          if (p.passExp && p.passExp <= last) return coBad(q(i, 'passExp'), 'The passport must be valid after your trip ends.');
+        }
+        const digits = CO.contact.phone.replace(/\D/g, '');
+        if (digits.length < 6 || digits.length > 12) return coBad(f.querySelector('[data-c="phone"]'), 'Please enter a valid mobile number.');
+        return true;
+      }
+      coBody.addEventListener('input', e => {
+        const t = e.target; t.setCustomValidity && t.setCustomValidity('');
+        if (t.dataset.c) { CO.contact[t.dataset.c] = t.value; if (t.dataset.c === 'dial') CO.contact.iso = t.selectedOptions[0].textContent.trim().split(' ').pop(); return; }
+        if (t.id === 'co-agree') { CO.agree = t.checked; return; }
+        const i = t.dataset.i, k = t.dataset.k; if (i === undefined) return;
+        const p = CO.pax[+i];
+        if (k === 'saved') {
+          const s = LS('travelers', [])[+t.value]; p.saved = t.value;
+          if (s) { p.first = s.first; p.last = s.last; p.title = s.title || p.title; p.gender = s.gender || p.gender; p.dob = s.bornOn || p.dob; p.nat = s.nat || p.nat; }
+          const y = coEl.scrollTop; coRender(); coEl.scrollTop = y; return;
+        }
+        p[k] = t.type === 'checkbox' ? t.checked : t.value;
       });
+      coBody.addEventListener('click', e => {
+        const b = e.target.closest('[data-co]'); if (!b) return; e.preventDefault();
+        if (b.dataset.co === 'login') openLogin();
+        else if (b.dataset.co === 'home') coDone();
+        else if (b.dataset.co === 'bookings') { coDone(); setTimeout(() => { stack = []; openScreen('bookings'); }, 150); }
+      });
+      coNext.addEventListener('click', async () => {
+        if (CO.step === 1) { CO.err = ''; if (coValidate()) { CO.step = 2; coRender(); } return; }
+        if (!CO.agree) { CO.err = 'Please accept the Terms and Privacy Policy to continue.'; coRender(); return; }
+        CO.busy = true; CO.err = ''; coRender();
+        const c = CO.contact;
+        try {
+          const res = await fetch('/api/book', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+            offerId: CO.offer.id,
+            contact: { email: c.email.trim(), phone: '+' + c.dial + c.phone.replace(/\D/g, '').replace(/^0+/, '') },
+            passengers: CO.pax.map(p => ({ type: p.type, title: p.title, gender: p.gender, firstName: p.first.trim(), lastName: p.last.trim(), bornOn: p.dob,
+              passport: p.passNo ? { number: p.passNo.trim().toUpperCase(), expires: p.passExp, country: p.nat } : null }))
+          }) });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok || data.error) throw new Error(data.error || 'We could not complete the booking. Please check your details and try again.');
+          CO.result = data; CO.step = 3; saveBooking(data.bookingReference);
+          CO.pax.filter(p => p.save).forEach(p => {
+            const t = LS('travelers', []);
+            if (!t.some(x => x.first.toLowerCase() === p.first.trim().toLowerCase() && x.last.toLowerCase() === p.last.trim().toLowerCase()))
+              t.push({ first: p.first.trim(), last: p.last.trim(), type: p.type === 'adult' ? 'Adult' : 'Child', title: p.title, gender: p.gender, bornOn: p.dob, nat: p.nat });
+            SV('travelers', t);
+          });
+        } catch (err) { CO.err = err.message && err.message !== 'Failed to fetch' ? err.message : 'Network problem. Please try again.'; }
+        CO.busy = false; coRender();
+      });
+      function coHide() { coOpen = false; coEl.hidden = true; }
+      function coDone() { coHide(); if (location.hash === '#checkout') history.go(-2); else closeResults(); }
+      window.closeCheckout = coHide;
+      window.openCheckout = function () {
+        const o = lastOffers.find(x => x.id === window.selectedOfferId); if (!o) return;
+        if (!CO || CO.offer.id !== o.id || CO.step === 3) CO = coNew(o);
+        coOpen = true; coEl.hidden = false;
+        if (location.hash !== '#checkout') history.pushState({ co: 1 }, '', '#checkout');
+        coRender();
+      };
+      document.getElementById('co-back').addEventListener('click', () => {
+        if (CO.step === 2) { CO.step = 1; CO.err = ''; coRender(); }
+        else if (CO.step === 3) coDone();
+        else if (location.hash === '#checkout') history.back(); else coHide();
+      });
+      window.addEventListener('popstate', () => { if (coOpen && location.hash !== '#checkout') coHide(); });
+      window.coAuthChanged = () => { if (coOpen && CO && CO.step === 1 && currentUser && !CO.contact.email) { CO.contact.email = currentUser.email; const y = coEl.scrollTop; coRender(); coEl.scrollTop = y; } };
+
       // Quick Service Popup Handler
       window.openServiceModal = function(serviceName) {
         const status = document.getElementById('service-status');
@@ -2617,10 +2696,8 @@
         SV('searches',s.slice(0,10));
       });
       window.saveBooking=function(pnr){
-        const b=LS('bookings',[]);
-        b.unshift({pnr,type:'flights',status:'upcoming',date:dIn.value,route:searchState.origin.iata+' → '+searchState.destination.iata,
-          airline:document.getElementById('checkout-airline-title').textContent.replace('Book Flight with ',''),
-          fare:document.getElementById('checkout-fare-summary').textContent.replace('Total Fare: ','').replace(/ \(.*$/,'')});
+        const o=CO.offer,b=LS('bookings',[]);
+        b.unshift({pnr,type:'flights',status:'upcoming',date:o.slices[0].dep.slice(0,10),route:o.slices[0].from+' → '+o.slices[0].to,airline:o.airline,fare:money(parseFloat(o.price),o.currency)});
         SV('bookings',b);
       };
       // ===== Sign in / sign up sheet (Supabase) =====
@@ -2631,7 +2708,7 @@
       function openLogin() { lsPanel('main'); showMsg(''); ls.hidden = false; document.body.style.overflow = 'hidden'; }
       function closeLogin() { ls.hidden = true; if (av.hidden && !rpOpen) document.body.style.overflow = ''; }
       function openRecovery() { openLogin(); lsPanel('reset'); }
-      function refreshAccount() { if (currentUser && !ls.hidden && document.getElementById('ls-reset').hidden) closeLogin(); if (!av.hidden && stack.length) render(); }
+      function refreshAccount() { if (typeof coAuthChanged === 'function') coAuthChanged(); if (currentUser && !ls.hidden && document.getElementById('ls-reset').hidden) closeLogin(); if (!av.hidden && stack.length) render(); }
       function setMode(m) {
         lsMode = m;
         document.querySelectorAll('.ls-tabs button').forEach(b => b.classList.toggle('on', b.dataset.mode === m));

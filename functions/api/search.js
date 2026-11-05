@@ -60,7 +60,7 @@ export async function onRequestPost({ request, env }) {
           id: o.id, price: o.total_amount, currency: o.total_currency,
           airline: (o.owner || {}).name, code: (o.owner || {}).iata_code, logo: (o.owner || {}).logo_symbol_url || null,
           cabin: pax.cabin_class_marketing_name || null, baggage: bag,
-          refundable: rf ? !!rf.allowed : null, expires: o.expires_at, slices: sl
+          refundable: rf ? !!rf.allowed : null, docsRequired: !!o.passenger_identity_documents_required, expires: o.expires_at, slices: sl
         };
       });
     return json(200, { liveMode: !!d.live_mode, requestId: d.id, offers });
