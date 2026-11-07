@@ -1311,6 +1311,25 @@
     .co-ok{text-align:center;padding:26px 6px}.co-ok .tick{width:72px;height:72px;border-radius:50%;background:#dcfce7;color:#16a34a;font-size:2rem;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
     .co-ref{font-size:2rem;font-weight:800;letter-spacing:3px;color:var(--brand-dark);background:#fff;border:2px dashed var(--border-color);border-radius:14px;padding:12px;margin:14px 0}
     .co-line{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--border-color);font-size:.92rem}.co-line:last-child{border:none}.co-line span{color:var(--text-muted)}
+
+    /* Service pages */
+    #svc{position:fixed;inset:0;z-index:1000;background:linear-gradient(135deg,#0B2545,#2196F3);overflow-y:auto}
+    .svc-head{max-width:760px;margin:0 auto;padding:16px 18px 26px;color:#fff}
+    .svc-head button{border:none;background:rgba(255,255,255,.18);color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:1.1rem}
+    .svc-head h2{font-size:1.9rem;margin-top:14px;line-height:1.15}
+    .svc-sheet{background:var(--bg-light);border-radius:30px 30px 0 0;min-height:calc(100vh - 130px);padding:22px 16px 60px}
+    .svc-sheet>*{max-width:728px;margin-left:auto;margin-right:auto}
+    .svc-btn{display:block;width:100%;text-align:center;text-decoration:none;background:var(--primary);color:#fff;border:none;border-radius:30px;padding:16px;font-weight:800;font-size:1.02rem;cursor:pointer;margin:0 0 10px}
+    .svc-btn.wa{background:#25D366}.svc-btn.call{background:var(--brand-blue)}.svc-btn.mail{background:#fff;color:var(--brand-dark);border:1.5px solid var(--border-color)}
+    .svc-btn:disabled{opacity:.6}
+    .svc-err{color:#b91c1c;font-size:.9rem;margin:10px 0;text-align:center;min-height:1.2em}
+    .svc-faq-title{font-size:.78rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;margin:26px 0 10px}
+    .svc-faq{background:#fff;border-radius:16px;padding:4px 14px;box-shadow:0 2px 10px rgba(11,37,69,.06)}
+    .svc-faq details{background:none;border:none;border-bottom:1px solid var(--border-color);border-radius:0;margin:0;padding:15px 2px}.svc-faq details:last-child{border:none}
+    .svc-faq summary{font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center;cursor:pointer}.svc-faq summary::-webkit-details-marker{display:none}.svc-faq summary::after{content:'⌄';color:var(--text-muted);font-size:1.2rem}.svc-faq details[open] summary::after{content:'⌃'}.svc-faq p{margin-top:8px;color:var(--text-muted);font-size:.92rem}
+    .svc-act{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--border-color);border-radius:14px;padding:14px;margin-bottom:10px;text-decoration:none;color:var(--brand-dark);font-weight:700;cursor:pointer;width:100%;font-size:.98rem;text-align:left}
+    .svc-act i{width:22px;text-align:center;color:var(--brand-blue)}
+    .svc-chip{display:inline-block;font-size:.78rem;font-weight:800;border-radius:20px;padding:5px 12px}.svc-chip.ok{background:#dcfce7;color:#166534}.svc-chip.bad{background:#fee2e2;color:#991b1b}
   </style>
 </head>
 <body>
@@ -1568,19 +1587,7 @@
           <div class="tile-icon"><i class="fa-solid fa-passport"></i></div>
           <div class="tile-title">Online Check-in</div>
         </div>
-        <div class="service-tile" onclick="openServiceModal('Digital Boarding Pass')">
-          <div class="tile-icon"><i class="fa-solid fa-ticket"></i></div>
-          <div class="tile-title">Boarding Pass</div>
-        </div>
-        <div class="service-tile" onclick="openServiceModal('Live Flight Status')">
-          <div class="tile-icon"><i class="fa-solid fa-plane-circle-check"></i></div>
-          <div class="tile-title">Flight Status</div>
-        </div>
-        <div class="service-tile" onclick="openServiceModal('Extra Baggage')">
-          <div class="tile-icon"><i class="fa-solid fa-suitcase-rolling"></i></div>
-          <div class="tile-title">Add Baggage</div>
-        </div>
-        <div class="service-tile" onclick="openServiceModal('24/7 Agency Support')">
+        <div class="service-tile" onclick="openServiceModal('Contact Support')">
           <div class="tile-icon"><i class="fa-solid fa-headset"></i></div>
           <div class="tile-title">Contact Support</div>
         </div>
@@ -1782,6 +1789,12 @@
     </div>
   </div>
 
+  <!-- Service pages: manage booking, check-in, support -->
+  <div id="svc" hidden>
+    <div class="svc-head"><button type="button" id="svc-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button><h2 id="svc-title"></h2></div>
+    <div class="svc-sheet" id="svc-body"></div>
+  </div>
+
   <!-- Sign in / sign up sheet -->
   <div id="login-sheet" hidden>
     <div class="ls-backdrop"></div>
@@ -1801,7 +1814,7 @@
         <form id="ls-form">
           <input type="text" id="ls-name" placeholder="Full name" autocomplete="name" hidden>
           <input type="email" id="ls-emailin" placeholder="Email" autocomplete="email" required>
-          <input type="password" id="ls-pass" placeholder="Password (at least 6 characters)" autocomplete="current-password" minlength="6" required>
+          <input type="password" id="ls-pass" placeholder="Password (at least 8 characters)" autocomplete="current-password" minlength="6" required>
           <button type="submit" class="ls-btn ls-submit" id="ls-submit">Log in</button>
         </form>
         <button type="button" class="ls-link" id="ls-forgot">Forgot password?</button>
@@ -1812,8 +1825,8 @@
         <h3>Reset password</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Enter the 8-digit code sent to your email and your new password.</p>
         <form id="ls-rform">
-          <input type="text" id="ls-otpcode" placeholder="6-digit verification code" maxlength="8" inputmode="numeric" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 0.95rem;">
-          <input type="password" id="ls-newpass" placeholder="New password (at least 6 characters)" autocomplete="new-password" minlength="6" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 0.95rem;">
+          <input type="text" id="ls-otpcode" placeholder="8-digit verification code" maxlength="8" inputmode="numeric" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 0.95rem;">
+          <input type="password" id="ls-newpass" placeholder="New password (at least 6 characters)" autocomplete="new-password" minlength="8" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 0.95rem;">
           <button type="submit" class="ls-btn ls-submit" style="background: #10b981;">Save new password</button>
         </form>
       </div>
@@ -2592,7 +2605,7 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
       const cityOpts=sel=>Object.entries(AP).map(([c,v])=>`<option value="${c}" ${c===sel?'selected':''}>${esc(v[0])} (${c})</option>`).join('');
       const row=(i,l,a,v)=>`<button type="button" class="av-row" data-act="${a}"><i class="fa-solid ${i}"></i><span>${l}</span><em>${esc(v||'')}</em><i class="fa-solid fa-chevron-right"></i></button>`;
       const empty=(i,t,s,cta,act)=>`<div class="av-empty"><i class="fa-solid ${i}"></i><h4>${t}</h4><p>${s}</p>${cta?`<button type="button" class="av-btn" data-act="${act}">${cta}</button>`:''}</div>`;
-      const card=(t,sub,btns)=>`<div class="av-card"><div><b>${t}</b><small>${sub}</small></div><div>${btns}</div></div>`;
+      const card=(t,sub,btns,attr='')=>`<div class="av-card" ${attr}><div><b>${t}</b><small>${sub}</small></div><div>${btns}</div></div>`;
       const completion=()=>{const p=LS('profile',{}),u=currentUser;return ([p.name||(u&&userName(u)),p.email||(u&&u.email),p.phone].filter(Boolean).length+(LS('travelers',[]).length?1:0))*25;};
       function setRoute(o,d){
         searchState.origin=o; searchState.destination=d;
@@ -2636,11 +2649,11 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
           const T=(k,l)=>`<button type="button" data-act="bktype:${k}" class="${bk.type===k?'on':''}">${l}</button>`;
           const S=(k,l,i)=>`<button type="button" data-act="bkst:${k}" class="${bk.st===k?'on':''}"><i class="fa-solid ${i}"></i> ${l}</button>`;
           const lbl={flights:'flight',hotels:'hotel',cars:'car'}[bk.type];
-          return ['My Bookings',`<div class="av-pills">${T('flights','Flights')}${T('hotels','Hotels')}${T('cars','Cars')}</div><div class="av-pills sub">${S('upcoming','Upcoming','fa-clock')}${S('completed','Completed','fa-circle-check')}${S('cancelled','Cancelled','fa-ban')}</div>`+(all.length?all.map(b=>card(esc(b.route+' · '+b.airline),esc(b.date+' · '+b.fare+' · Ref '+b.pnr),b.st==='upcoming'?`<button type="button" class="av-x" data-act="cancel:${esc(b.pnr)}">Cancel</button>`:'')).join(''):empty('fa-ticket','No '+bk.st+' bookings','Ready for the road? Start searching now.','Find '+lbl+' deals','svc-tab:'+bk.type))];},
+          return ['My Bookings',`<div class="av-pills">${T('flights','Flights')}${T('hotels','Hotels')}${T('cars','Cars')}</div><div class="av-pills sub">${S('upcoming','Upcoming','fa-clock')}${S('completed','Completed','fa-circle-check')}${S('cancelled','Cancelled','fa-ban')}</div>`+(all.length?all.map(b=>card(esc(b.route+' · '+b.airline),esc(b.date+' · '+b.fare+' · Ref '+b.pnr),`<button type="button" class="av-x pri" data-act="open:${esc(b.pnr)}">Manage</button>`,`data-open="${esc(b.pnr)}" style="cursor:pointer"`)).join(''):empty('fa-ticket','No '+bk.st+' bookings','Ready for the road? Start searching now.','Find '+lbl+' deals','svc-tab:'+bk.type))];},
         reservations(){return ['My Reservations',empty('fa-list-ul','No reservations','Bookings you hold before paying will appear here.')];},
         searches(){const s=LS('searches',[]);
           return ['My Searches',s.length?s.map((x,i)=>card(esc(x.o.city+' → '+x.d.city),esc(x.date+' · '+x.pax+' traveler(s) · '+x.cabin),`<button type="button" class="av-x pri" data-act="sgo:${i}">Search again</button><button type="button" class="av-x" data-act="del:searches:${i}">Remove</button>`)).join(''):empty('fa-clock-rotate-left','No recent searches','Your flight searches will appear here.')];},
-        manage(){return ['Manage',['Manage Booking:fa-list-check','Online Check-in:fa-passport','Digital Boarding Pass:fa-ticket','Live Flight Status:fa-plane-circle-check','Extra Baggage:fa-suitcase-rolling','24/7 Agency Support:fa-headset'].map(x=>{const [l,i]=x.split(':');return row(i,l,'svc:'+l);}).join('')];},
+        manage(){return ['Manage',['Manage Booking:fa-list-check','Online Check-in:fa-passport','Contact Support:fa-headset'].map(x=>{const [l,i]=x.split(':');return row(i,l,'svc:'+l);}).join('')];},
         country(){const c=LS('prefs',{}).country||'';const L=['Bahrain','Saudi Arabia','United Arab Emirates','Qatar','Kuwait','Oman','Bangladesh','India','Pakistan','Malaysia','Singapore','Thailand','United Kingdom','United States','Canada','Australia'];
           return ['Country',`<form class="av-form" data-form="country"><label>Your country<select name="country"><option value="">Select…</option>${L.map(x=>`<option ${x===c?'selected':''}>${x}</option>`).join('')}</select></label><button class="av-btn">Save</button></form>`];},
         currency(){return ['Currency',`<form class="av-form" data-form="currency"><label>Display currency<select name="cur">${document.getElementById('currency-selector').innerHTML}</select></label><button class="av-btn">Save</button></form>`];},
@@ -2670,6 +2683,7 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
       document.getElementById('av-back').addEventListener('click',()=>{stack.pop();stack.length?render():closeView();});
 
       av.addEventListener('click',e=>{
+        const bo=e.target.closest('[data-open]'); if(bo && !e.target.closest('button')){ openBookingDetails(bo.dataset.open); return; }
         const b=e.target.closest('[data-act]'); if(!b) return;
         const act=b.dataset.act, [a,x,y]=act.split(':');
         if(a==='go') openScreen(x);
@@ -2680,6 +2694,7 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
         else if(a==='del'){const l=LS(x,[]);l.splice(+y,1);SV(x,l);render();}
         else if(a==='bktype'){bk.type=x;render();}
         else if(a==='bkst'){bk.st=x;render();}
+        else if(a==='open'){openBookingDetails(x);}
         else if(a==='cancel'){SV('bookings',LS('bookings',[]).map(k=>k.pnr===x?{...k,status:'cancelled'}:k));render();}
         else if(a==='favadd'){const f=LS('favs',[]),o=searchState.origin,d=searchState.destination;if(!f.some(k=>k.o.iata===o.iata&&k.d.iata===d.iata)){f.unshift({o,d});SV('favs',f);}render();}
         else if(a==='favgo'){const k=LS('favs',[])[+x];closeView();setRoute(k.o,k.d);window.scrollTo({top:0,behavior:'smooth'});}
@@ -2714,7 +2729,7 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
       });
       window.saveBooking=function(pnr){
         const o=CO.offer,b=LS('bookings',[]);
-        b.unshift({pnr,type:'flights',status:'upcoming',date:o.slices[0].dep.slice(0,10),route:o.slices[0].from+' → '+o.slices[0].to,airline:o.airline,fare:money(parseFloat(o.price),o.currency)});
+        b.unshift({pnr,lastName:(CO.pax[0]||{}).last,orderId:(CO.result||{}).orderId,type:'flights',status:'upcoming',date:o.slices[0].dep.slice(0,10),route:o.slices[0].from+' → '+o.slices[0].to,airline:o.airline,fare:money(parseFloat(o.price),o.currency)});
         SV('bookings',b);
       };
       // ===== Sign in / sign up sheet (Supabase) =====
@@ -2838,6 +2853,94 @@ document.getElementById('ls-rback')?.addEventListener('click', () => {
   document.getElementById('ls-email').hidden = false;
   document.getElementById('ls-msg').textContent = '';
 });
+
+      // ===== Service pages: Manage booking, Online check-in, Contact support =====
+      const svcEl = document.getElementById('svc'), svcBody = document.getElementById('svc-body');
+      const SUPPORT_PHONE = '+97337576600', SUPPORT_EMAIL = 'support@get2fly.com';
+      let svcOpen = false, svcKind = null;
+      const waHref = text => waReady() ? waUrl(text) : 'mailto:' + SUPPORT_EMAIL + '?subject=' + encodeURIComponent('Get2Fly support') + '&body=' + encodeURIComponent(text);
+      const faq = items => `<div class="svc-faq-title">Frequently asked questions</div><div class="svc-faq">${items.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('')}</div>`;
+      const sfield = (id, ph, val, extra) => `<div class="co-field"><input id="${id}" placeholder="${ph}" value="${esc(val || '')}" required autocomplete="off" ${extra || ''}></div>`;
+      const REFATTR = 'maxlength="8" style="text-transform:uppercase" autocapitalize="characters"';
+
+      const SVC = {
+        manage: { title: 'Manage My Booking', render: pre => `<form id="svc-form" data-kind="manage">${sfield('sv-ref', 'Reservation (PNR) code', pre && pre.ref, REFATTR)}${sfield('sv-last', 'Traveler last name', pre && pre.last)}
+          <button class="svc-btn" id="sv-go" type="submit">Find my booking →</button><p class="svc-err" id="svc-err"></p></form>` +
+          faq([['What is a PNR code?', 'A PNR (booking reference) is a code of 5 to 8 letters and numbers that identifies your reservation. You can find it on your Get2Fly confirmation.'],
+               ['How can I use my PNR number?', 'Enter it here with the traveler\'s last name to see your trip. You can also use it on the airline\'s website to check in and manage your booking.']]) },
+        checkin: { title: 'Online Check-in', render: pre => `<form id="svc-form" data-kind="checkin">${sfield('sv-ref', 'Reservation (PNR) code', pre && pre.ref, REFATTR)}${sfield('sv-first', 'Traveler name', '')}${sfield('sv-last', 'Traveler surname', pre && pre.last)}
+          <button class="svc-btn" id="sv-go" type="submit">Check-in →</button><p class="svc-err" id="svc-err"></p></form>` +
+          faq([['What is online check-in?', 'Online check-in lets you confirm your flight and get your boarding pass before you reach the airport. It is done on the airline\'s own website or app.'],
+               ['How can I check in online?', 'Enter your details here. We will show your flight and take you to your airline\'s check-in page. Most airlines open check-in 24 to 48 hours before departure, but the time differs, so please check your airline\'s rules.']]) },
+        support: { title: 'Contact Support', render: () => `<div class="co-card" style="text-align:center"><h3 style="margin-bottom:4px">We are here 24/7</h3><p style="color:var(--text-muted);margin-bottom:16px">Choose how you would like to reach us.</p>
+          <a class="svc-btn wa" href="${esc(waHref('Hello Get2Fly, I need some help.'))}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp us</a>
+          <a class="svc-btn call" href="tel:${SUPPORT_PHONE}"><i class="fa-solid fa-phone"></i> Call +973 3757 6600</a>
+          <a class="svc-btn mail" href="mailto:${SUPPORT_EMAIL}"><i class="fa-solid fa-envelope"></i> ${SUPPORT_EMAIL}</a></div>
+          <div class="co-card"><h3>What do you need help with?</h3><div class="co-field"><input id="sp-ref" placeholder="Booking reference (optional)" maxlength="8" style="text-transform:uppercase"></div>
+          <div class="sh-chips">${['Booking help', 'Change or cancel', 'Refund', 'Payment problem', 'Baggage', 'Other'].map(t => `<button type="button" class="sh-chip" data-topic="${t}">${t}</button>`).join('')}</div>
+          <p style="font-size:.8rem;color:var(--text-muted);margin-top:10px">Tap a topic and WhatsApp opens with your message ready to send.</p></div>` +
+          faq([['How can I change or cancel my booking?', 'Open Manage Booking, find your trip, and use the request buttons. Changes and refunds follow the airline\'s fare rules.'],
+               ['When will I get my refund?', 'Refund timing is explained in our <a href="refund.html" target="_blank" rel="noopener">Refund Policy</a>.'],
+               ['I did not get my confirmation email', 'Please check your spam folder first, then message us with your booking reference.'],
+               ['Can I add baggage after booking?', 'Often yes, depending on the airline. Message us with your reference and we will check.']]) }
+      };
+      function renderSvc(pre) { const k = SVC[svcKind]; document.getElementById('svc-title').textContent = k.title; svcBody.innerHTML = k.render(pre); svcEl.scrollTop = 0; }
+      function openSvc(kind, pre) {
+        svcKind = kind; svcOpen = true; svcEl.hidden = false; document.body.style.overflow = 'hidden'; renderSvc(pre);
+        if (location.hash !== '#svc') history.pushState({ svc: 1 }, '', '#svc');
+      }
+      function closeSvc() { svcOpen = false; svcEl.hidden = true; if (!rpOpen && av.hidden && !coOpen) document.body.style.overflow = ''; }
+      window.openServiceModal = name => { const k = { 'Manage Booking': 'manage', 'Online Check-in': 'checkin', 'Contact Support': 'support' }[name]; if (k) openSvc(k); };
+      document.getElementById('svc-close').addEventListener('click', () => { if (location.hash === '#svc') history.back(); else closeSvc(); });
+      window.addEventListener('popstate', () => { if (svcOpen && location.hash !== '#svc') closeSvc(); });
+
+      async function lookupBooking(ref, last) {
+        const res = await fetch('/api/lookup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: ref, lastName: last }) });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || data.error) throw new Error(data.error || 'We could not find a booking with those details.');
+        return data;
+      }
+      function detailsHtml(b) {
+        const s0 = b.slices[0], act = (icon, label, text) => `<a class="svc-act" href="${esc(waHref(`Hello Get2Fly, I need to ${text} for booking ${b.reference} (${s0.from}-${s0.to}, ${s0.dep.slice(0, 10)}).`))}" target="_blank" rel="noopener"><i class="fa-solid ${icon}"></i>${label}</a>`;
+        return `<div class="co-card"><div style="display:flex;justify-content:space-between;align-items:center"><span class="svc-chip ${b.cancelled ? 'bad' : 'ok'}">${b.cancelled ? 'Cancelled' : 'Confirmed'}</span><small style="color:var(--text-muted)">${esc(b.airline || '')}</small></div>
+          <div class="co-ref">${esc(b.reference)}</div>${b.liveMode ? '' : '<p class="co-err" style="margin:0">Test booking: no real ticket was issued.</p>'}</div>
+          <div class="co-card"><h3>Your flight</h3>${coSlices(b)}</div>
+          <div class="co-card"><h3>Travelers</h3>${b.passengers.map(p => `<div class="co-line"><b>${esc(p.name)}</b><span>${p.type === 'child' ? 'Child' : 'Adult'}${p.ticket ? ' · E-ticket ' + esc(p.ticket) : ''}</span></div>`).join('')}</div>
+          <div class="co-card"><h3>Baggage and fare</h3><div class="co-line"><span>Checked baggage</span><b>${b.baggage.checked ? b.baggage.checked + ' included' : 'Not included'}</b></div><div class="co-line"><span>Cabin baggage</span><b>${b.baggage.carryOn ? b.baggage.carryOn + ' included' : 'Ask the airline'}</b></div>
+            <div class="co-line"><span>Refund rules</span><b>${b.refundable === true ? 'Refundable' : b.refundable === false ? 'Non-refundable' : 'See fare rules'}</b></div><div class="co-line"><span>Total paid</span><b>${esc(money(parseFloat(b.total.amount), b.total.currency))}</b></div></div>
+          ${b.cancelled ? '' : `<button type="button" class="svc-act" data-svc="checkin"><i class="fa-solid fa-passport"></i>Online check-in</button>${act('fa-rotate-left', 'Request cancellation or refund', 'cancel or request a refund')}${act('fa-calendar-days', 'Request a flight change', 'change my flight')}${act('fa-suitcase-rolling', 'Add baggage', 'add baggage')}`}
+          ${act('fa-headset', 'Get help with this booking', 'get help')}`;
+      }
+      function checkinHtml(b) {
+        const url = 'https://www.google.com/search?q=' + encodeURIComponent((b.airline || '') + ' online check-in');
+        return `<div class="co-card"><h3>Your flight</h3>${coSlices(b)}</div><div class="co-card"><h3>Check in with ${esc(b.airline || 'your airline')}</h3>
+          <p style="color:var(--text-muted)">Check-in is done on the airline's own website or app. Use this booking reference there:</p><div class="co-ref">${esc(b.reference)}</div>
+          <a class="svc-btn" href="${esc(url)}" target="_blank" rel="noopener">Find ${esc(b.airline || 'airline')} check-in →</a>
+          <p style="font-size:.85rem;color:var(--text-muted)">Most airlines open online check-in 24 to 48 hours before departure. Your boarding pass is issued by the airline after you check in.</p></div>
+          <button type="button" class="svc-act" data-svc="back"><i class="fa-solid fa-arrow-left"></i>Search another booking</button>`;
+      }
+      svcBody.addEventListener('submit', async e => {
+        const f = e.target.closest('#svc-form'); if (!f) return; e.preventDefault();
+        const kind = f.dataset.kind, ref = document.getElementById('sv-ref').value.trim(), last = document.getElementById('sv-last').value.trim(), btn = document.getElementById('sv-go'), err = document.getElementById('svc-err');
+        const first = kind === 'checkin' ? document.getElementById('sv-first').value.trim().toLowerCase() : '';
+        btn.disabled = true; err.textContent = '';
+        try {
+          const b = await lookupBooking(ref, last);
+          if (first && !b.passengers.some(p => p.name.toLowerCase().startsWith(first))) throw new Error('The traveler name does not match this booking.');
+          svcKind = kind; document.getElementById('svc-title').textContent = kind === 'checkin' ? 'Online Check-in' : 'Your Booking';
+          svcBody.innerHTML = kind === 'checkin' ? checkinHtml(b) : detailsHtml(b); svcEl.scrollTop = 0;
+        } catch (ex) { err.textContent = ex.message && ex.message !== 'Failed to fetch' ? ex.message : 'Network problem. Please try again.'; btn.disabled = false; }
+      });
+      svcBody.addEventListener('click', e => {
+        const t = e.target.closest('[data-topic]');
+        if (t) { const r = (document.getElementById('sp-ref').value || '').trim().toUpperCase(); window.open(waHref(`Hello Get2Fly, I need help with: ${t.dataset.topic}.${r ? ' Booking reference: ' + r : ''}`), '_blank', 'noopener'); return; }
+        const d = e.target.closest('[data-svc]'); if (!d) return;
+        if (d.dataset.svc === 'checkin') openSvc('checkin'); else if (d.dataset.svc === 'back') renderSvc();
+      });
+      window.openBookingDetails = async function (pnr) {
+        const bk0 = LS('bookings', []).find(x => x.pnr === pnr); closeView(); openSvc('manage', { ref: pnr, last: bk0 && bk0.lastName });
+        if (bk0 && bk0.lastName) { document.getElementById('svc-form').requestSubmit(); }
+      };
     });
   </script>
 </body>
