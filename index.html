@@ -2357,6 +2357,7 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
           coBody.innerHTML = `<div class="co-ok"><div class="tick"><i class="fa-solid fa-check"></i></div><h2>${r.liveMode ? 'Booking confirmed' : 'Test booking created'}</h2>
             <p style="color:var(--text-muted)">${r.liveMode ? 'Please save your booking reference.' : 'This was a test: no real ticket was issued and nothing was charged.'}</p>
             <div class="co-ref">${esc(r.bookingReference)}</div>
+            <p style="color:var(--text-muted);font-size:.92rem;margin-bottom:14px">${r.emailSent ? `We emailed your confirmation to <b>${esc(CO.contact.email)}</b>. If you do not see it, please check your spam folder.` : 'We could not send the confirmation email. Please save your reference. You can request the email again from Manage Booking.'}</p>
             <div class="co-card" style="text-align:left"><div class="co-line"><span>Flight</span><b>${esc(o.airline)}</b></div><div class="co-line"><span>Route</span><b>${esc(o.slices[0].from)} → ${esc(o.slices[0].to)}</b></div><div class="co-line"><span>Date</span><b>${esc(o.slices[0].dep.slice(0, 10))}</b></div><div class="co-line"><span>Travelers</span><b>${esc(CO.pax.map(p => p.first + ' ' + p.last).join(', '))}</b></div><div class="co-line"><span>Total</span><b>${esc(money(parseFloat(o.price), o.currency))}</b></div></div>
             <button type="button" class="co-next" style="width:100%;max-width:none;margin-bottom:10px" data-co="bookings">View my bookings</button>
             <button type="button" class="rp-ghost" style="width:100%;margin:0" data-co="home">Back to home</button></div>`;
@@ -2857,7 +2858,7 @@ document.getElementById('ls-rback')?.addEventListener('click', () => {
       // ===== Service pages: Manage booking, Online check-in, Contact support =====
       const svcEl = document.getElementById('svc'), svcBody = document.getElementById('svc-body');
       const SUPPORT_PHONE = '+97337576600', SUPPORT_EMAIL = 'support@get2fly.com';
-      let svcOpen = false, svcKind = null;
+      let svcOpen = false, svcKind = null, svcLast = null;
       const waHref = text => waReady() ? waUrl(text) : 'mailto:' + SUPPORT_EMAIL + '?subject=' + encodeURIComponent('Get2Fly support') + '&body=' + encodeURIComponent(text);
       const faq = items => `<div class="svc-faq-title">Frequently asked questions</div><div class="svc-faq">${items.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('')}</div>`;
       const sfield = (id, ph, val, extra) => `<div class="co-field"><input id="${id}" placeholder="${ph}" value="${esc(val || '')}" required autocomplete="off" ${extra || ''}></div>`;
@@ -2909,6 +2910,7 @@ document.getElementById('ls-rback')?.addEventListener('click', () => {
           <div class="co-card"><h3>Baggage and fare</h3><div class="co-line"><span>Checked baggage</span><b>${b.baggage.checked ? b.baggage.checked + ' included' : 'Not included'}</b></div><div class="co-line"><span>Cabin baggage</span><b>${b.baggage.carryOn ? b.baggage.carryOn + ' included' : 'Ask the airline'}</b></div>
             <div class="co-line"><span>Refund rules</span><b>${b.refundable === true ? 'Refundable' : b.refundable === false ? 'Non-refundable' : 'See fare rules'}</b></div><div class="co-line"><span>Total paid</span><b>${esc(money(parseFloat(b.total.amount), b.total.currency))}</b></div></div>
           ${b.cancelled ? '' : `<button type="button" class="svc-act" data-svc="checkin"><i class="fa-solid fa-passport"></i>Online check-in</button>${act('fa-rotate-left', 'Request cancellation or refund', 'cancel or request a refund')}${act('fa-calendar-days', 'Request a flight change', 'change my flight')}${act('fa-suitcase-rolling', 'Add baggage', 'add baggage')}`}
+          <button type="button" class="svc-act" data-svc="email"><i class="fa-solid fa-envelope"></i><span>Email me this confirmation${b.email ? ' (' + esc(b.email) + ')' : ''}</span></button>
           ${act('fa-headset', 'Get help with this booking', 'get help')}`;
       }
       function checkinHtml(b) {
@@ -2925,7 +2927,7 @@ document.getElementById('ls-rback')?.addEventListener('click', () => {
         const first = kind === 'checkin' ? document.getElementById('sv-first').value.trim().toLowerCase() : '';
         btn.disabled = true; err.textContent = '';
         try {
-          const b = await lookupBooking(ref, last);
+          const b = await lookupBooking(ref, last); svcLast = { ref: b.reference, last };
           if (first && !b.passengers.some(p => p.name.toLowerCase().startsWith(first))) throw new Error('The traveler name does not match this booking.');
           svcKind = kind; document.getElementById('svc-title').textContent = kind === 'checkin' ? 'Online Check-in' : 'Your Booking';
           svcBody.innerHTML = kind === 'checkin' ? checkinHtml(b) : detailsHtml(b); svcEl.scrollTop = 0;
@@ -2936,11 +2938,24 @@ document.getElementById('ls-rback')?.addEventListener('click', () => {
         if (t) { const r = (document.getElementById('sp-ref').value || '').trim().toUpperCase(); window.open(waHref(`Hello Get2Fly, I need help with: ${t.dataset.topic}.${r ? ' Booking reference: ' + r : ''}`), '_blank', 'noopener'); return; }
         const d = e.target.closest('[data-svc]'); if (!d) return;
         if (d.dataset.svc === 'checkin') openSvc('checkin'); else if (d.dataset.svc === 'back') renderSvc();
+        else if (d.dataset.svc === 'email') emailMe(d);
       });
+      async function emailMe(btn) {
+        const label = btn.querySelector('span'); if (!svcLast || btn.disabled) return; btn.disabled = true; label.textContent = 'Sending…';
+        try {
+          const res = await fetch('/api/resend-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reference: svcLast.ref, lastName: svcLast.last }) });
+          const data = await res.json().catch(() => ({}));
+          label.textContent = res.ok ? 'Sent to ' + data.to + '. Please check your spam folder too.' : (data.error || 'Could not send the email. Please contact support.');
+        } catch (e) { label.textContent = 'Network problem. Please try again.'; }
+        setTimeout(() => { btn.disabled = false; }, 60000);
+      }
       window.openBookingDetails = async function (pnr) {
         const bk0 = LS('bookings', []).find(x => x.pnr === pnr); closeView(); openSvc('manage', { ref: pnr, last: bk0 && bk0.lastName });
         if (bk0 && bk0.lastName) { document.getElementById('svc-form').requestSubmit(); }
       };
+      // Link from the confirmation email: get2fly.com/?manage=ABC123
+      const mq = new URLSearchParams(location.search).get('manage');
+      if (mq && /^[A-Za-z0-9]{5,8}$/.test(mq)) openSvc('manage', { ref: mq.toUpperCase() });
     });
   </script>
 </body>

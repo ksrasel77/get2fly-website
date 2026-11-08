@@ -1,4 +1,5 @@
-// Cloudflare Pages Function: creates bookings/orders through Duffel.  URL: /api/book
+// Cloudflare Pages Function: creates bookings/orders through Duffel, then emails the confirmation.  URL: /api/book
+import { sendConfirmation } from '../_lib/email.js';
 const json = (code, obj) => new Response(JSON.stringify(obj), { status: code, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 const TITLES = ['mr', 'ms', 'mrs', 'miss'];
 const NAME = /^[A-Za-z][A-Za-z '\-]{0,39}$/, DAY = /^\d{4}-\d{2}-\d{2}$/, EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/, PHONE = /^\+\d{7,15}$/;
@@ -65,9 +66,10 @@ export async function onRequestPost({ request, env }) {
       return json(400, { error: msg ? String(msg).slice(0, 160) : 'Booking creation failed.' });
     }
     const order = orderJson.data || {};
+    const mail = await sendConfirmation(env, order);
     return json(200, {
       success: true, orderId: order.id, bookingReference: order.booking_reference || 'PENDING',
-      totalAmount: order.total_amount, currency: order.total_currency, liveMode: !!order.live_mode
+      totalAmount: order.total_amount, currency: order.total_currency, liveMode: !!order.live_mode, emailSent: !!mail.ok
     });
   } catch (e) {
     return json(502, { error: 'Booking service is temporarily unavailable. Please try again.' });
