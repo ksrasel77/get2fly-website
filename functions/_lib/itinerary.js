@@ -1,5 +1,5 @@
 // Shared helpers: turns a Duffel order into simple data used by the confirmation email and the PDF e-ticket.
-export const COMPANY = { name: 'Get2Fly LLC', address: '30 N Gould St, Ste R, Sheridan, WY 82801, USA', phone: '+973 3757 6600', email: 'support@get2fly.com', site: 'https://get2fly.com' };
+export const COMPANY = { name: 'Get2Fly', address: '30 N Gould St, Ste R, Sheridan, WY 82801, USA', addressLines: ['30 N Gould St, Ste R', 'Sheridan, WY 82801, USA'], phone: '+973 3757 6600', email: 'support@get2fly.com', site: 'https://get2fly.com' };
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 export const when = (iso) => { const [y, m, d] = iso.slice(0, 10).split('-').map(Number); return `${d} ${MONTHS[m - 1]} ${y}, ${DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]} ${iso.slice(11, 16)}`; };
 export const dur = (d) => { const m = /PT(?:(\d+)H)?(?:(\d+)M)?/.exec(d || ''); return m ? `${m[1] ? m[1] + 'h ' : ''}${m[2] ? m[2] + 'min' : ''}`.trim() || '0min' : ''; };
@@ -33,7 +33,8 @@ export function normalize(order) {
   const rf = order.conditions && order.conditions.refund_before_departure;
   return {
     ref: order.booking_reference || '', test: !order.live_mode, airline: (order.owner || {}).name || 'the airline', createdAt: order.created_at || '',
-    total: `${order.total_currency} ${order.total_amount}`, passengers, slices, ticketed, international,
+    total: `${order.total_currency} ${order.total_amount}`, base: order.base_amount ? `${order.base_currency || order.total_currency} ${order.base_amount}` : '', taxes: order.tax_amount ? `${order.tax_currency || order.total_currency} ${order.tax_amount}` : '',
+    passengers, slices, ticketed, international,
     refund: rf ? (rf.allowed ? 'Refundable' : 'Non-refundable') : 'See fare rules',
     routeText: first ? `${first.fromCity} - ${(slices[0].segments[lastSlice.length - 1]).toCity}` : ''
   };
