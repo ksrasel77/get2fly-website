@@ -1330,6 +1330,32 @@
     .svc-act{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--border-color);border-radius:14px;padding:14px;margin-bottom:10px;text-decoration:none;color:var(--brand-dark);font-weight:700;cursor:pointer;width:100%;font-size:.98rem;text-align:left}
     .svc-act i{width:22px;text-align:center;color:var(--brand-blue)}
     .svc-chip{display:inline-block;font-size:.78rem;font-weight:800;border-radius:20px;padding:5px 12px}.svc-chip.ok{background:#dcfce7;color:#166534}.svc-chip.bad{background:#fee2e2;color:#991b1b}
+
+    /* Date strip, price graph, share */
+    .rp-dates-bar{background:#fff;display:flex;align-items:center;gap:6px;padding:12px 12px 10px;border-bottom:1px solid var(--border-color);position:sticky;top:60px;z-index:4;max-width:100%}
+    .rp-dates-bar[hidden],#rp-toast[hidden],#pg-sheet[hidden]{display:none}
+    .rd-chips{flex:1;display:flex;gap:6px;min-width:0}
+    .rd-chip{flex:1;min-width:0;position:relative;border:1.5px solid var(--border-color);background:#f8fafc;border-radius:12px;padding:7px 2px;text-align:center;cursor:pointer;color:var(--brand-dark);line-height:1.25}
+    .rd-chip b{display:block;font-size:.8rem;white-space:nowrap}.rd-chip small{display:block;color:var(--text-muted);font-size:.68rem;min-height:.9em}
+    .rd-chip.on{background:#fff;border-color:var(--brand-blue);box-shadow:0 0 0 1px var(--brand-blue)}.rd-chip:disabled{opacity:.4;cursor:default}
+    .rd-chip .tag{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;font-size:.58rem;font-weight:800;border-radius:8px;padding:1px 6px;white-space:nowrap}
+    .rd-arrow{flex:0 0 auto;width:32px;height:32px;border-radius:50%;border:none;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.15);cursor:pointer;color:var(--brand-blue)}.rd-arrow:disabled{opacity:.35}
+    .rd-graph{background:transparent;box-shadow:none;font-size:1.25rem;color:var(--brand-dark);width:36px}
+    #pg-sheet{position:fixed;inset:0;z-index:1060}
+    .pg-title{text-align:center;font-size:1.15rem;padding:16px 22px 12px;line-height:1.35}
+    .pg-banner{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#eef2f7;border-radius:14px;margin:0 14px;padding:8px}
+    .pg-banner button{width:34px;height:34px;border-radius:50%;border:none;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.12);cursor:pointer;color:var(--brand-blue)}.pg-banner button:disabled{opacity:.35}
+    .pg-banner span{font-size:.92rem;text-align:center}
+    .pg-bars{display:flex;align-items:flex-end;gap:6px;padding:26px 14px 6px;min-height:220px;border-bottom:1px solid var(--border-color);margin:0 0 0}
+    .pg-col{flex:1;min-width:0;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:0;color:var(--brand-dark)}.pg-col:disabled{opacity:.4;cursor:default}
+    .pg-col b{font-size:.95rem;margin-top:6px}.pg-col small{color:var(--text-muted);font-size:.72rem}
+    .pg-bar{position:relative;width:100%;border-radius:10px 10px 0 0;background:#eef2f7;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;font-size:.7rem;font-weight:700;color:#475569}
+    .pg-bar.busy{animation:pgpulse 1s infinite alternate}.pg-bar.past,.pg-bar.none{background:#f1f5f9;color:#94a3b8}
+    .pg-col.sel .pg-bar{background:#22c55e;color:#fff}
+    .pg-bar em{position:absolute;top:-19px;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;font-style:normal;font-size:.58rem;font-weight:800;border-radius:8px;padding:2px 6px}
+    @keyframes pgpulse{from{opacity:.5}to{opacity:1}}
+    .pg-month{text-align:center;color:var(--text-muted);padding:10px 0 2px;font-size:.95rem}.pg-note{text-align:center;color:var(--text-muted);font-size:.78rem;padding:4px 20px 18px}
+    #rp-toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#0B2545;color:#fff;padding:12px 20px;border-radius:24px;font-weight:700;z-index:1300;font-size:.9rem}
   </style>
 </head>
 <body>
@@ -1754,7 +1780,13 @@
 
   <!-- Results page: loading screen, filters and fares -->
   <div id="rp" hidden>
-    <div class="rp-top"><button type="button" id="rp-back" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button><div class="rp-route"><b id="rp-title"></b><small id="rp-sub"></small></div></div>
+    <div class="rp-top"><button type="button" id="rp-back" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button><div class="rp-route"><b id="rp-title"></b><small id="rp-sub"></small></div><button type="button" id="rp-share" aria-label="Share this search" style="margin-left:auto"><i class="fa-solid fa-share-nodes"></i></button></div>
+    <div id="rp-dates" class="rp-dates-bar" hidden>
+      <button type="button" id="rd-prev" class="rd-arrow" aria-label="Earlier dates"><i class="fa-solid fa-chevron-left"></i></button>
+      <div class="rd-chips" id="rd-chips"></div>
+      <button type="button" id="rd-next" class="rd-arrow" aria-label="Later dates"><i class="fa-solid fa-chevron-right"></i></button>
+      <button type="button" id="rd-graph" class="rd-arrow rd-graph" aria-label="Price graph"><i class="fa-solid fa-chart-simple"></i></button>
+    </div>
     <div id="rp-loading">
       <div class="rp-hero"></div>
       <div class="rp-ticket">
@@ -1778,6 +1810,18 @@
     </div>
     <div id="rp-error" class="rp-wrap" hidden>
       <div class="rp-empty"><i class="fa-solid fa-triangle-exclamation"></i><h3>We could not show flights</h3><p id="rp-error-msg"></p><button type="button" class="rp-select" id="rp-retry">Try again</button><button type="button" class="rp-ghost" id="rp-change">Change search</button></div>
+    </div>
+  </div>
+  <div id="rp-toast" hidden></div>
+  <div id="pg-sheet" hidden>
+    <div class="sh-backdrop"></div>
+    <div class="sh-panel">
+      <div style="width:44px;height:5px;border-radius:3px;background:#cbd5e1;margin:10px auto 0"></div>
+      <h3 class="pg-title">Select a date below for the cheapest price for Departure.</h3>
+      <div class="pg-banner"><button type="button" id="pg-prev" aria-label="Earlier week"><i class="fa-solid fa-chevron-left"></i></button><span id="pg-cheap">Loading prices…</span><button type="button" id="pg-next" aria-label="Later week"><i class="fa-solid fa-chevron-right"></i></button></div>
+      <div class="pg-bars" id="pg-bars"></div>
+      <div class="pg-month" id="pg-month"></div>
+      <p class="pg-note">These are the lowest prices we found when we checked. The final price is shown when you select a flight.</p>
     </div>
   </div>
   <div id="rp-sheet" hidden>
@@ -2129,7 +2173,7 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
           await new Promise(r => setTimeout(r, Math.max(0, 1400 - (Date.now() - t0))));
           lastOffers = data.offers || []; lastLive = !!data.liveMode;
           if (!lastOffers.length) { showError('No flights found for these dates. Try different dates or airports.'); return; }
-          F = F0(); buildSheet(); showPane('results'); renderOffers();
+          F = F0(); buildSheet(); showPane('results'); renderOffers(); afterResults();
         } catch (err) {
           lastOffers = [];
           await new Promise(r => setTimeout(r, Math.max(0, 1400 - (Date.now() - t0))));
@@ -2153,6 +2197,8 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
         if (!rpOpen) return;
         ['loading', 'results', 'error'].forEach(k => { document.getElementById('rp-' + k).hidden = (k !== p); });
         if (p !== 'loading') clearInterval(msgTimer);
+        const rd = document.getElementById('rp-dates'), mc = document.querySelector('input[name="tripType"]:checked').value === 'multicity';
+        if (rd) { rd.hidden = (p === 'loading' || mc); if (!rd.hidden && typeof renderStrip === 'function') renderStrip(true); }
         rp.scrollTop = 0;
       }
       function openResults() {
@@ -2173,7 +2219,7 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
         const bar = document.querySelector('#rp-loading .rp-bar i'); bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = '';
         if (location.hash !== '#results') history.pushState({ rp: 1 }, '', '#results');
       }
-      function closeResults() { rpOpen = false; rp.hidden = true; sheet.hidden = true; clearInterval(msgTimer); document.body.style.overflow = ''; }
+      function closeResults() { rpOpen = false; rp.hidden = true; sheet.hidden = true; document.getElementById('pg-sheet').hidden = true; clearInterval(msgTimer); document.body.style.overflow = ''; }
       document.getElementById('rp-back').addEventListener('click', () => { if (location.hash === '#results') history.back(); else closeResults(); });
       window.addEventListener('popstate', () => { if (rpOpen && location.hash !== '#results') closeResults(); });
       window.rpIsOpen = () => rpOpen;
@@ -2953,6 +2999,108 @@ document.getElementById('ls-rback')?.addEventListener('click', () => {
         const bk0 = LS('bookings', []).find(x => x.pnr === pnr); closeView(); openSvc('manage', { ref: pnr, last: bk0 && bk0.lastName });
         if (bk0 && bk0.lastName) { document.getElementById('svc-form').requestSubmit(); }
       };
+
+      // ===== Date strip, price graph and share (results page) =====
+      const rdChips = document.getElementById('rd-chips'), pgSheet = document.getElementById('pg-sheet');
+      const toISO = d => d.toISOString().slice(0, 10);
+      const addD = (s, n) => { const d = new Date(s + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return toISO(d); };
+      const diffD = (a, b) => Math.round((new Date(b + 'T12:00:00Z') - new Date(a + 'T12:00:00Z')) / 864e5);
+      const isRound = () => document.querySelector('input[name="tripType"]:checked').value === 'roundtrip';
+      const tripLen = () => isRound() ? Math.max(1, diffD(dIn.value, rIn.value)) : 0;
+      const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const dayInfo = s => { const d = new Date(s + 'T12:00:00Z'); return { wd: WD[d.getUTCDay()], dm: d.getUTCDate(), mo: MO[d.getUTCMonth()], full: d.toLocaleDateString('en-GB', { month: 'long', timeZone: 'UTC' }) }; };
+      const shortMoney = (a, c) => { try { return new Intl.NumberFormat('en-US', { style: 'currency', currency: c, currencyDisplay: 'narrowSymbol', maximumFractionDigits: 0 }).format(a); } catch (e) { return c + ' ' + Math.round(a); } };
+      const PC = {}, PF = {};
+      const pkey = dep => [searchState.origin.iata, searchState.destination.iata, dep, tripLen(), searchState.adults, searchState.children, searchState.cabinClass].join('|');
+      const stripSize = () => window.innerWidth < 430 ? 3 : window.innerWidth < 700 ? 5 : 7;
+      const centerStart = (sel, size) => { const s = addD(sel, -Math.floor(size / 2)); return s < todayIso ? todayIso : s; };
+      let rdStart = null, pgStart = null;
+
+      function renderStrip(reset) {
+        const size = stripSize(), sel = dIn.value; if (reset || !rdStart) rdStart = centerStart(sel, size);
+        const days = [...Array(size)].map((_, i) => addD(rdStart, i));
+        const prices = days.map(d => { const x = PC[pkey(d)]; return x && x.p != null ? x.p : null; }), known = prices.filter(x => x != null), min = (() => { const base = pkey(sel).split('|'); let m = Infinity; Object.keys(PC).forEach(k => { const q = k.split('|'); if ([0, 1, 3, 4, 5, 6].every(i => q[i] === base[i]) && PC[k] && PC[k].p != null && PC[k].p < m) m = PC[k].p; }); return m; })();
+        rdChips.innerHTML = days.map((d, i) => {
+          const f = dayInfo(d), x = PC[pkey(d)], price = x && x.p != null ? shortMoney(x.p, x.cur) : '';
+          return `<button type="button" class="rd-chip ${d === sel ? 'on' : ''}" data-d="${d}" ${d < todayIso ? 'disabled' : ''}>${price && prices[i] === min && known.length > 0 ? '<span class="tag">Cheapest</span>' : ''}<small>${f.wd}</small><b>${f.dm} ${f.mo}</b><small>${price}</small></button>`;
+        }).join('');
+        document.getElementById('rd-prev').disabled = rdStart <= todayIso;
+      }
+      function pickDate(dep) {
+        if (dep < todayIso) return; pgSheet.hidden = true; if (dep === dIn.value) return;
+        const delta = diffD(dIn.value, dep), round = isRound();
+        dIn.value = dep; showDate('depart', dep); rIn.min = dep;
+        if (round) { rIn.value = addD(rIn.value, delta); showDate('return', rIn.value); }
+        rdStart = null; openResults(); searchLiveFlights();
+      }
+      function afterResults() {
+        if (!lastOffers.length) return;
+        PC[pkey(dIn.value)] = { p: Math.min(...lastOffers.map(o => parseFloat(o.price))), cur: lastOffers[0].currency };
+        rdStart = null; renderStrip(true);
+      }
+      document.getElementById('rd-prev').addEventListener('click', () => { const sz = stripSize(); rdStart = addD(rdStart, -sz); if (rdStart < todayIso) rdStart = todayIso; renderStrip(); });
+      document.getElementById('rd-next').addEventListener('click', () => { rdStart = addD(rdStart, stripSize()); renderStrip(); });
+      rdChips.addEventListener('click', e => { const b = e.target.closest('.rd-chip'); if (b) pickDate(b.dataset.d); });
+
+      function fetchPrice(d) {
+        const k = pkey(d); if (PC[k] !== undefined || PF[k]) return; PF[k] = true;
+        const body = { origin: searchState.origin.iata, destination: searchState.destination.iata, departureDate: d, returnDate: tripLen() ? addD(d, tripLen()) : null, adults: searchState.adults, children: searchState.children, cabin: searchState.cabinClass };
+        fetch('/api/price', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+          .then(r => r.json().then(j => ({ ok: r.ok, j }))).then(({ ok, j }) => { if (ok) PC[k] = { p: j.price != null ? parseFloat(j.price) : null, cur: j.currency }; })
+          .catch(() => {}).finally(() => { delete PF[k]; if (!pgSheet.hidden) renderGraph(); renderStrip(); });
+      }
+      function loadWeek() { for (let i = 0; i < 7; i++) { const d = addD(pgStart, i); if (d >= todayIso) fetchPrice(d); } }
+      function renderGraph() {
+        const days = [...Array(7)].map((_, i) => addD(pgStart, i));
+        const items = days.map(d => ({ d, pr: PC[pkey(d)], busy: !!PF[pkey(d)], past: d < todayIso }));
+        const vals = items.filter(x => x.pr && x.pr.p != null).map(x => x.pr.p), lo = Math.min(...vals), hi = Math.max(...vals);
+        const cur = (items.find(x => x.pr && x.pr.p != null) || { pr: {} }).pr.cur;
+        document.getElementById('pg-cheap').innerHTML = vals.length ? `Cheapest flight for Departure: <b>${esc(shortMoney(lo, cur))}</b>` : (items.some(x => x.busy) ? 'Loading prices…' : 'No prices found for these dates');
+        document.getElementById('pg-bars').innerHTML = items.map(x => {
+          const f = dayInfo(x.d); let h = 46, txt = '…', cls = 'busy';
+          if (x.past) { txt = ''; cls = 'past'; h = 30; }
+          else if (x.pr && x.pr.p != null) { cls = ''; h = hi === lo ? 110 : 60 + (x.pr.p - lo) / (hi - lo) * 90; txt = shortMoney(x.pr.p, x.pr.cur); }
+          else if (x.pr || !x.busy) { txt = '–'; cls = 'none'; h = 40; }
+          const isMin = x.pr && x.pr.p != null && x.pr.p === lo && vals.length > 1;
+          return `<button type="button" class="pg-col ${x.d === dIn.value ? 'sel' : ''}" data-d="${x.d}" ${x.past ? 'disabled' : ''}><span class="pg-bar ${cls}" style="height:${h}px">${isMin ? '<em>Cheapest</em>' : ''}${esc(txt)}</span><b>${f.dm}</b><small>${f.wd}</small></button>`;
+        }).join('');
+        const a = dayInfo(days[0]), z = dayInfo(days[6]);
+        document.getElementById('pg-month').textContent = a.mo === z.mo ? a.full : a.mo + ' - ' + z.mo;
+        document.getElementById('pg-prev').disabled = pgStart <= todayIso;
+      }
+      document.getElementById('rd-graph').addEventListener('click', () => { pgStart = centerStart(dIn.value, 7); pgSheet.hidden = false; renderGraph(); loadWeek(); });
+      document.getElementById('pg-prev').addEventListener('click', () => { pgStart = addD(pgStart, -7); if (pgStart < todayIso) pgStart = todayIso; renderGraph(); loadWeek(); });
+      document.getElementById('pg-next').addEventListener('click', () => { pgStart = addD(pgStart, 7); renderGraph(); loadWeek(); });
+      document.getElementById('pg-bars').addEventListener('click', e => { const b = e.target.closest('.pg-col'); if (b) pickDate(b.dataset.d); });
+      pgSheet.querySelector('.sh-backdrop').addEventListener('click', () => { pgSheet.hidden = true; });
+
+      // Share this search as a link
+      const toast = t => { const el = document.getElementById('rp-toast'); el.textContent = t; el.hidden = false; setTimeout(() => { el.hidden = true; }, 2200); };
+      function shareUrl() {
+        const u = new URL(location.origin + '/'), o = searchState.origin, d = searchState.destination;
+        const q = { o: o.iata, oc: o.city, oa: o.airport, d: d.iata, dc: d.city, da: d.airport, dep: dIn.value, ad: searchState.adults, ch: searchState.children, cab: searchState.cabinClass };
+        if (isRound()) q.ret = rIn.value;
+        Object.entries(q).forEach(([k, v]) => u.searchParams.set(k, v)); return u.toString();
+      }
+      document.getElementById('rp-share').addEventListener('click', async () => {
+        const url = shareUrl(), title = `Flights ${searchState.origin.city} to ${searchState.destination.city} on Get2Fly`;
+        if (navigator.share) { try { await navigator.share({ title, text: title, url }); return; } catch (e) { if (e.name === 'AbortError') return; } }
+        try { await navigator.clipboard.writeText(url); toast('Link copied'); } catch (e) { window.prompt('Copy this link', url); }
+      });
+      // Open a shared search link: get2fly.com/?o=BAH&d=DAC&dep=2026-12-22...
+      (function () {
+        const q = new URLSearchParams(location.search), o = q.get('o'), d = q.get('d'), dep = q.get('dep'), ret = q.get('ret');
+        if (!/^[A-Z]{3}$/.test(o || '') || !/^[A-Z]{3}$/.test(d || '') || o === d || !/^\d{4}-\d{2}-\d{2}$/.test(dep || '') || dep < todayIso) return;
+        setRoute({ city: q.get('oc') || o, iata: o, airport: q.get('oa') || '' }, { city: q.get('dc') || d, iata: d, airport: q.get('da') || '' });
+        dIn.value = dep; showDate('depart', dep); rIn.min = dep;
+        const round = /^\d{4}-\d{2}-\d{2}$/.test(ret || '') && ret > dep;
+        if (round) { rIn.value = ret; showDate('return', ret); }
+        const radio = document.querySelector(`input[name="tripType"][value="${round ? 'roundtrip' : 'oneway'}"]`); radio.checked = true; radio.dispatchEvent(new Event('change', { bubbles: true }));
+        searchState.adults = Math.min(Math.max(parseInt(q.get('ad'), 10) || 1, 1), 9); searchState.children = Math.min(Math.max(parseInt(q.get('ch'), 10) || 0, 0), 8);
+        const cab = ['Economy', 'Premium', 'Business', 'First'].includes(q.get('cab')) ? q.get('cab') : 'Economy'; searchState.cabinClass = cab;
+        const cs = document.getElementById('cabin-class-select'); if (cs) cs.value = cab; updatePaxSummary();
+        openResults(); searchLiveFlights();
+      })();
       // Link from the confirmation email: get2fly.com/?manage=ABC123
       const mq = new URLSearchParams(location.search).get('manage');
       if (mq && /^[A-Za-z0-9]{5,8}$/.test(mq)) openSvc('manage', { ref: mq.toUpperCase() });
