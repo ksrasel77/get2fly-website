@@ -2798,11 +2798,12 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
         showMsg('');
       }
        const oauth = provider => supabase.auth.signInWithOAuth({ 
-        provider, 
-        options: { 
-          redirectTo: 'https://get2fly.com/',
-          scopes: provider === 'facebook' ? 'email,public_profile' : undefined
-        } 
+  provider, 
+  options: { 
+    redirectTo: location.origin + '/',
+    scopes: provider === 'facebook' ? 'email,public_profile' : undefined
+  } 
+
       });
       document.getElementById('ls-google').addEventListener('click', () => oauth('google'));
       document.getElementById('ls-fb').addEventListener('click', () => oauth('facebook'));
