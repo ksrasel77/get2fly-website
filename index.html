@@ -2797,7 +2797,13 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
         document.getElementById('ls-pass').autocomplete = m === 'signup' ? 'new-password' : 'current-password';
         showMsg('');
       }
-      const oauth = provider => supabase.auth.signInWithOAuth({ provider, options: { redirectTo: location.origin + '/' } });
+       const oauth = provider => supabase.auth.signInWithOAuth({ 
+        provider, 
+        options: { 
+          redirectTo: 'https://get2fly.com/auth/v1/callback',
+          scopes: provider === 'facebook' ? 'email,public_profile' : undefined
+        } 
+      });
       document.getElementById('ls-google').addEventListener('click', () => oauth('google'));
       document.getElementById('ls-fb').addEventListener('click', () => oauth('facebook'));
       document.getElementById('ls-mail').addEventListener('click', () => { setMode('login'); lsPanel('email'); });
