@@ -5,8 +5,8 @@ import { buildPdf } from './pdf.js';
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const b64 = (u8) => { let s = ''; for (let i = 0; i < u8.length; i += 8192) s += String.fromCharCode.apply(null, u8.subarray(i, i + 8192)); return btoa(s); };
 
-export function buildEmail(order) {
-  const n = normalize(order);
+export function buildEmail(order, paid) {
+  const n = normalize(order, paid);
   const first = (n.passengers[0] || {}).name || 'traveler';
   const manage = `${COMPANY.site}/?manage=${encodeURIComponent(n.ref)}`;
   const subject = `${n.test ? '[TEST] ' : ''}Details of your ${n.routeText} flight with PNR ${n.ref}`;
@@ -55,14 +55,14 @@ ${flights}
   return { subject, html, text, ref: n.ref };
 }
 
-export async function sendConfirmation(env, order) {
+export async function sendConfirmation(env, order, paid) {
   if (!env.RESEND_API_KEY) return { ok: false, reason: 'not configured' };
   const to = ((order.passengers || []).find((p) => p.email) || {}).email;
   if (!to) return { ok: false, reason: 'no email' };
   try {
-    const m = buildEmail(order);
+    const m = buildEmail(order, paid);
     const body = { from: env.EMAIL_FROM || 'Get2Fly <bookings@get2fly.com>', to: [to], reply_to: COMPANY.email, subject: m.subject, html: m.html, text: m.text };
-    try { body.attachments = [{ filename: `Get2Fly_E-ticket_${m.ref}.pdf`, content: b64(buildPdf(order)) }]; } catch (e) { /* send the email even if the PDF fails */ }
+    try { body.attachments = [{ filename: `Get2Fly_E-ticket_${m.ref}.pdf`, content: b64(buildPdf(order, paid)) }]; } catch (e) { /* send the email even if the PDF fails */ }
     const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     return { ok: r.ok, status: r.status, to, attached: !!body.attachments };
   } catch (e) { return { ok: false, reason: 'network' }; }

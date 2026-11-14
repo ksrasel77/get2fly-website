@@ -6,7 +6,7 @@ export const dur = (d) => { const m = /PT(?:(\d+)H)?(?:(\d+)M)?/.exec(d || ''); 
 const mins = (iso) => { const [d, t] = iso.split('T'); const [y, m, dd] = d.split('-').map(Number); const [h, mi] = t.slice(0, 5).split(':').map(Number); return Date.UTC(y, m - 1, dd, h, mi) / 60000; };
 const gap = (a, b) => { const x = mins(b) - mins(a); return `${Math.floor(x / 60) ? Math.floor(x / 60) + 'h ' : ''}${x % 60 ? (x % 60) + 'min' : ''}`.trim() || '0min'; };
 
-export function normalize(order) {
+export function normalize(order, paid) {
   const docs = (order.documents || []).filter((x) => x.type === 'electronic_ticket');
   const passengers = (order.passengers || []).map((p) => ({
     name: [p.given_name, p.family_name].filter(Boolean).join(' '), type: p.type === 'child' || (p.age != null && p.age < 12) ? 'Child' : 'Adult',
@@ -33,7 +33,7 @@ export function normalize(order) {
   const rf = order.conditions && order.conditions.refund_before_departure;
   return {
     ref: order.booking_reference || '', test: !order.live_mode, airline: (order.owner || {}).name || 'the airline', createdAt: order.created_at || '',
-    total: `${order.total_currency} ${order.total_amount}`, base: order.base_amount ? `${order.base_currency || order.total_currency} ${order.base_amount}` : '', taxes: order.tax_amount ? `${order.tax_currency || order.total_currency} ${order.tax_amount}` : '',
+    total: paid ? `${paid.currency} ${paid.amount}` : `${order.total_currency} ${order.total_amount}`, fee: paid && parseFloat(paid.fee) > 0 ? `${paid.currency} ${paid.fee}` : '', paidVia: paid ? paid.method : '', base: order.base_amount ? `${order.base_currency || order.total_currency} ${order.base_amount}` : '', taxes: order.tax_amount ? `${order.tax_currency || order.total_currency} ${order.tax_amount}` : '',
     passengers, slices, ticketed, international,
     refund: rf ? (rf.allowed ? 'Refundable' : 'Non-refundable') : 'See fare rules',
     routeText: first ? `${first.fromCity} - ${(slices[0].segments[lastSlice.length - 1]).toCity}` : ''

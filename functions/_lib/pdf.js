@@ -45,8 +45,8 @@ class Doc {
   }
 }
 
-export function buildPdf(order) {
-  const n = normalize(order);
+export function buildPdf(order, paid) {
+  const n = normalize(order, paid);
   const d = new Doc([`${COMPANY.name}  |  ${COMPANY.address}`, `${COMPANY.phone}  |  ${COMPANY.email}  |  ${COMPANY.site.replace('https://', '')}`]);
   // Header: logo left, company details right
   const lh = 46, lw = lh * LOGO.w / LOGO.h;
@@ -105,10 +105,11 @@ export function buildPdf(order) {
 
   d.heading('Payment Information', 160);
   d.need(90); const pt = d.y; d.rect(M, pt - 62, W - 2 * M, 72, '#f8fafc', '#e2e8f0');
-  if (n.base) { d.text('Price', M + 14, pt - 10, { size: 10, color: GRAY }); d.text(n.base, 250, pt - 10, { size: 10.5 }); d.text('Taxes and fees', M + 14, pt - 28, { size: 10, color: GRAY }); d.text(n.taxes, 250, pt - 28, { size: 10.5 }); }
+  if (n.base) { d.text('Price', M + 14, pt - 10, { size: 10, color: GRAY }); d.text(n.base, 250, pt - 10, { size: 10.5 }); d.text('Taxes and fees', M + 14, pt - 28, { size: 10, color: GRAY }); d.text(n.taxes, 250, pt - 28, { size: 10.5 }); if (n.fee) { d.text('Service fee', M + 14, pt - 46, { size: 10, color: GRAY }); d.text(n.fee, 250, pt - 46, { size: 10.5 }); } }
   else d.text('Fare including taxes and fees', M + 14, pt - 10, { size: 10, color: GRAY });
   d.text('TOTAL', W - M - 14, pt - 14, { size: 8, bold: true, color: GRAY, right: true }); d.text(n.total, W - M - 14, pt - 38, { size: 17, bold: true, color: NAVY, right: true });
   d.y = pt - 80;
+  if (n.paidVia) { d.text(`Paid with ${n.paidVia}`, M, d.y, { size: 9, bold: true, color: '#166534' }); d.y -= 13; }
   d.text('This document is your e-ticket itinerary receipt. It is not an invoice.', M, d.y, { size: 8, color: GRAY });
 
   // Page 2: travel conditions

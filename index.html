@@ -17,7 +17,7 @@
   <style>
     /* Reset & CSS Variables */
     * {
-      margin: 0;co
+      margin: 0;
       padding: 0;
       box-sizing: border-box;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -2376,8 +2376,10 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
         const o = CO.offer, n = CO.pax.length, amt = parseFloat(o.price), c = CO.contact;
         document.getElementById('co-title').textContent = ['', 'Traveler Details', 'Review and Confirm', 'Booking Confirmed'][CO.step];
         document.getElementById('co-foot').hidden = CO.step === 3;
-        document.getElementById('co-total').innerHTML = `<small>Total · ${n} traveler${n > 1 ? 's' : ''}, taxes included</small><b>${esc(money(amt, o.currency))}</b>`;
-        coNext.disabled = CO.busy; coNext.textContent = CO.step === 1 ? 'Continue →' : CO.busy ? 'Booking…' : 'Confirm booking';
+        const fee = coFee(o, n);
+        document.getElementById('co-total').innerHTML = `<small>Total · ${n} traveler${n > 1 ? 's' : ''}, ${fee > 0 ? 'incl. service fee' : 'taxes included'}</small><b>${esc(money(amt + fee, o.currency))}</b>`;
+        coNext.hidden = CO.step === 2 && !!payCfg.paypal;
+        coNext.disabled = CO.busy; coNext.textContent = CO.step === 1 ? 'Continue →' : CO.busy ? 'Booking…' : 'Confirm test booking';
         const err = CO.err ? `<div class="co-err">${esc(CO.err)}</div>` : '';
         if (CO.step === 1) {
           const two = o.slices.length > 1;
@@ -2395,13 +2397,15 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
           coBody.innerHTML = `${err}<div class="co-card"><h3>Your flight</h3>${coSlices(o)}${bagBox(o)}</div>
             <div class="co-card"><h3>Travelers</h3>${CO.pax.map(p => `<div class="co-line"><b>${esc(p.first)} ${esc(p.last)}</b><span>${p.type === 'adult' ? 'Adult' : 'Child'} · ${esc(p.dob)}</span></div>`).join('')}</div>
             <div class="co-card"><h3>Contact</h3><div class="co-line"><span>E-mail</span><b>${esc(c.email)}</b></div><div class="co-line"><span>Mobile</span><b>+${esc(c.dial)} ${esc(c.phone)}</b></div></div>
-            <div class="co-card"><h3>Price</h3><div class="co-line"><span>${n} traveler${n > 1 ? 's' : ''} · taxes and fees included</span><b>${esc(money(amt, o.currency))}</b></div>
-              ${lastLive ? '' : '<p class="co-err" style="margin:10px 0 0">Test mode: this creates a test booking only. No real ticket is issued and nothing is charged.</p>'}</div>
-            <label class="co-check" style="padding:0 4px"><input type="checkbox" id="co-agree" ${CO.agree ? 'checked' : ''}><span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>, <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="refund.html" target="_blank" rel="noopener">Refund Policy</a>.</span></label>`;
+            <div class="co-card"><h3>Price</h3><div class="co-line"><span>Fare · ${n} traveler${n > 1 ? 's' : ''}, taxes included</span><b>${esc(money(amt, o.currency))}</b></div>
+              ${fee > 0 ? `<div class="co-line"><span>Service fee</span><b>${esc(money(fee, o.currency))}</b></div><div class="co-line"><span><b>Total to pay</b></span><b>${esc(money(amt + fee, o.currency))}</b></div>` : ''}
+              ${lastLive ? '' : '<p class="co-err" style="margin:10px 0 0">Test mode: this creates a test booking only. No real ticket is issued.</p>'}</div>
+            <label class="co-check" style="padding:0 4px"><input type="checkbox" id="co-agree" ${CO.agree ? 'checked' : ''}><span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>, <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="refund.html" target="_blank" rel="noopener">Refund Policy</a>.</span></label>
+            ${payCfg.paypal ? `<div class="co-card" style="margin-top:14px"><h3>Pay securely</h3><div id="paypal-box">${CO.busy ? '<p style="text-align:center;color:var(--text-muted)">Processing your booking…</p>' : '<p style="text-align:center;color:var(--text-muted)">Loading payment options…</p>'}</div><p style="font-size:.78rem;color:var(--text-muted);margin-top:8px;text-align:center">${payCfg.paypal.env === 'live' ? '' : 'Sandbox: PayPal test mode, no real money is used. '}More payment options (BenefitPay and cards) are coming soon.</p></div>` : ''}`;
         } else {
           const r = CO.result || {};
           coBody.innerHTML = `<div class="co-ok"><div class="tick"><i class="fa-solid fa-check"></i></div><h2>${r.liveMode ? 'Booking confirmed' : 'Test booking created'}</h2>
-            <p style="color:var(--text-muted)">${r.liveMode ? 'Please save your booking reference.' : 'This was a test: no real ticket was issued and nothing was charged.'}</p>
+            <p style="color:var(--text-muted)">${r.liveMode ? 'Please save your booking reference.' : 'This was a test: no real ticket was issued.'}${r.paid ? ` Paid ${esc(r.paid.currency)} ${esc(r.paid.amount)} with ${esc(r.paid.method)}.` : ''}</p>
             <div class="co-ref">${esc(r.bookingReference)}</div>
             <p style="color:var(--text-muted);font-size:.92rem;margin-bottom:14px">${r.emailSent ? `We emailed your confirmation to <b>${esc(CO.contact.email)}</b>. If you do not see it, please check your spam folder.` : 'We could not send the confirmation email. Please save your reference. You can request the email again from Manage Booking.'}</p>
             <div class="co-card" style="text-align:left"><div class="co-line"><span>Flight</span><b>${esc(o.airline)}</b></div><div class="co-line"><span>Route</span><b>${esc(o.slices[0].from)} → ${esc(o.slices[0].to)}</b></div><div class="co-line"><span>Date</span><b>${esc(o.slices[0].dep.slice(0, 10))}</b></div><div class="co-line"><span>Travelers</span><b>${esc(CO.pax.map(p => p.first + ' ' + p.last).join(', '))}</b></div><div class="co-line"><span>Total</span><b>${esc(money(parseFloat(o.price), o.currency))}</b></div></div>
@@ -2409,6 +2413,7 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
             <button type="button" class="rp-ghost" style="width:100%;margin:0" data-co="home">Back to home</button></div>`;
         }
         coEl.scrollTop = 0;
+        if (CO.step === 2 && payCfg.paypal && !CO.busy) mountPay();
       }
       const coBad = (el, msg) => { if (el) { el.setCustomValidity(msg); el.reportValidity(); } return false; };
       function coValidate() {
@@ -2443,14 +2448,45 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
         else if (b.dataset.co === 'home') coDone();
         else if (b.dataset.co === 'bookings') { coDone(); setTimeout(() => { stack = []; openScreen('bookings'); }, 150); }
       });
-      coNext.addEventListener('click', async () => {
-        if (CO.step === 1) { CO.err = ''; if (coValidate()) { CO.step = 2; coRender(); } return; }
-        if (!CO.agree) { CO.err = 'Please accept the Terms and Privacy Policy to continue.'; coRender(); return; }
+      // ---- Payment (PayPal) ----
+      let payCfg = { paypal: null, fee: { fixed: 0, percent: 0 } };
+      fetch('/api/pay-config').then(r => r.json()).then(c => { payCfg = c; if (coOpen && CO) { const y = coEl.scrollTop; coRender(); coEl.scrollTop = y; } }).catch(() => {});
+      const coFee = (o, n) => Math.round((payCfg.fee.fixed * n + parseFloat(o.price) * payCfg.fee.percent / 100) * 100) / 100;
+      let ppCur = '';
+      function ensurePaypal(cur) {
+        return new Promise((resolve, reject) => {
+          if (window.paypal && ppCur === cur) return resolve();
+          document.querySelectorAll('script[data-pp]').forEach(x => x.remove()); delete window.paypal;
+          const sc = document.createElement('script'); sc.dataset.pp = '1';
+          sc.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(payCfg.paypal.clientId)}&currency=${encodeURIComponent(cur)}&intent=capture&components=buttons`;
+          sc.onload = () => { ppCur = cur; resolve(); }; sc.onerror = () => reject(new Error('PayPal could not load'));
+          document.head.appendChild(sc);
+        });
+      }
+      async function mountPay() {
+        const box = document.getElementById('paypal-box'); if (!box) return;
+        try {
+          await ensurePaypal(CO.offer.currency);
+          const box2 = document.getElementById('paypal-box'); if (!box2 || CO.step !== 2) return; box2.innerHTML = '';
+          window.paypal.Buttons({
+            style: { layout: 'vertical', shape: 'pill', label: 'pay' },
+            onClick: (d, a) => { if (CO.agree) return a.resolve(); CO.err = 'Please accept the Terms and Privacy Policy to continue.'; const y = coEl.scrollTop; coRender(); coEl.scrollTop = y; return a.reject(); },
+            createOrder: async () => {
+              const r = await fetch('/api/pay-create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ offerId: CO.offer.id }) });
+              const d = await r.json().catch(() => ({})); if (!r.ok || !d.id) throw new Error(d.error || 'We could not start the payment.'); return d.id;
+            },
+            onApprove: d => coBook(d.orderID),
+            onCancel: () => { CO.err = 'Payment was cancelled. You have not been charged.'; coRender(); },
+            onError: err => { CO.err = (err && err.message && err.message.length < 140) ? err.message : 'The payment could not be completed. You have not been charged.'; CO.busy = false; coRender(); }
+          }).render('#paypal-box');
+        } catch (e) { box.innerHTML = '<p class="co-err">The payment options could not load. Please refresh the page and try again.</p>'; }
+      }
+      async function coBook(paypalOrderId) {
         CO.busy = true; CO.err = ''; coRender();
         const c = CO.contact;
         try {
           const res = await fetch('/api/book', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
-            offerId: CO.offer.id,
+            offerId: CO.offer.id, paypalOrderId: paypalOrderId || undefined,
             contact: { email: c.email.trim(), phone: '+' + c.dial + c.phone.replace(/\D/g, '').replace(/^0+/, '') },
             passengers: CO.pax.map(p => ({ type: p.type, title: p.title, gender: p.gender, firstName: p.first.trim(), lastName: p.last.trim(), bornOn: p.dob,
               passport: p.passNo ? { number: p.passNo.trim().toUpperCase(), expires: p.passExp, country: p.nat } : null }))
@@ -2466,6 +2502,12 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
           });
         } catch (err) { CO.err = err.message && err.message !== 'Failed to fetch' ? err.message : 'Network problem. Please try again.'; }
         CO.busy = false; coRender();
+      }
+      coNext.addEventListener('click', async () => {
+        if (CO.step === 1) { CO.err = ''; if (coValidate()) { CO.step = 2; coRender(); } return; }
+        if (payCfg.paypal) return;
+        if (!CO.agree) { CO.err = 'Please accept the Terms and Privacy Policy to continue.'; coRender(); return; }
+        await coBook('');
       });
       function coHide() { coOpen = false; coEl.hidden = true; }
       function coDone() { coHide(); if (location.hash === '#checkout') history.go(-2); else closeResults(); }
@@ -2797,14 +2839,7 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
         document.getElementById('ls-pass').autocomplete = m === 'signup' ? 'new-password' : 'current-password';
         showMsg('');
       }
-       const oauth = provider => supabase.auth.signInWithOAuth({ 
-  provider, 
-  options: { 
-    redirectTo: location.origin + '/',
-    scopes: provider === 'facebook' ? 'email,public_profile' : undefined
-  } 
-
-      });
+      const oauth = provider => supabase.auth.signInWithOAuth({ provider, options: { redirectTo: location.origin + '/' } });
       document.getElementById('ls-google').addEventListener('click', () => oauth('google'));
       document.getElementById('ls-fb').addEventListener('click', () => oauth('facebook'));
       document.getElementById('ls-mail').addEventListener('click', () => { setMode('login'); lsPanel('email'); });
