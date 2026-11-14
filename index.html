@@ -1310,6 +1310,8 @@
     .co-err{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:12px;padding:12px;margin-bottom:12px;font-size:.9rem}
     .co-ok{text-align:center;padding:26px 6px}.co-ok .tick{width:72px;height:72px;border-radius:50%;background:#dcfce7;color:#16a34a;font-size:2rem;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
     .co-ref{font-size:2rem;font-weight:800;letter-spacing:3px;color:var(--brand-dark);background:#fff;border:2px dashed var(--border-color);border-radius:14px;padding:12px;margin:14px 0}
+    .co-pay{display:flex;justify-content:space-between;align-items:center;border:1.5px solid var(--border-color);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+    .co-pay small{display:block;color:var(--text-muted);font-size:.8rem}.co-pay.on{border-color:var(--brand-blue);background:#e8f3ff}.co-pay.on i{color:var(--brand-blue);font-style:normal}.co-pay.off{opacity:.55}
     .co-line{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--border-color);font-size:.92rem}.co-line:last-child{border:none}.co-line span{color:var(--text-muted)}
 
     /* Service pages */
@@ -2401,7 +2403,11 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
               ${fee > 0 ? `<div class="co-line"><span>Service fee</span><b>${esc(money(fee, o.currency))}</b></div><div class="co-line"><span><b>Total to pay</b></span><b>${esc(money(amt + fee, o.currency))}</b></div>` : ''}
               ${lastLive ? '' : '<p class="co-err" style="margin:10px 0 0">Test mode: this creates a test booking only. No real ticket is issued.</p>'}</div>
             <label class="co-check" style="padding:0 4px"><input type="checkbox" id="co-agree" ${CO.agree ? 'checked' : ''}><span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>, <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="refund.html" target="_blank" rel="noopener">Refund Policy</a>.</span></label>
-            ${payCfg.paypal ? `<div class="co-card" style="margin-top:14px"><h3>Pay securely</h3><div id="paypal-box">${CO.busy ? '<p style="text-align:center;color:var(--text-muted)">Processing your booking…</p>' : '<p style="text-align:center;color:var(--text-muted)">Loading payment options…</p>'}</div><p style="font-size:.78rem;color:var(--text-muted);margin-top:8px;text-align:center">${payCfg.paypal.env === 'live' ? '' : 'Sandbox: PayPal test mode, no real money is used. '}More payment options (BenefitPay and cards) are coming soon.</p></div>` : ''}`;
+            <div class="co-card" style="margin-top:14px"><h3>Payment method</h3>
+              <div class="co-pay on"><span><b>PayPal</b><small>${payCfg.paypal ? 'Pay securely with your PayPal account' : 'Not connected yet'}</small></span><i>${payCfg.paypal ? '●' : ''}</i></div>
+              <div class="co-pay off"><span><b>BenefitPay</b><small>Coming soon</small></span></div>
+              <div class="co-pay off"><span><b>Credit or debit card</b><small>Coming soon</small></span></div>
+              ${payCfg.paypal ? `<div id="paypal-box" style="margin-top:12px">${CO.busy ? '<p style="text-align:center;color:var(--text-muted)">Processing your booking…</p>' : '<p style="text-align:center;color:var(--text-muted)">Loading payment options…</p>'}</div><p style="font-size:.78rem;color:var(--text-muted);margin-top:8px;text-align:center">${payCfg.paypal.env === 'live' ? '' : 'Sandbox: PayPal test mode, no real money is used.'}</p>` : '<p class="co-err" style="margin:12px 0 0">Online payment is not connected yet, so the button below creates a test booking only.</p>'}</div>`;
         } else {
           const r = CO.result || {};
           coBody.innerHTML = `<div class="co-ok"><div class="tick"><i class="fa-solid fa-check"></i></div><h2>${r.liveMode ? 'Booking confirmed' : 'Test booking created'}</h2>
