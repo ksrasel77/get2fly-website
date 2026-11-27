@@ -17,5 +17,5 @@ export async function onRequest({ request, env, params }) {
       case 'action': if (!post) throw new Fail(405, 'Method not allowed.'); return json(200, await A.action(env, staff, await readJson(request)));
       default: throw new Fail(404, 'Not found.');
     }
-  });
+  }, env);
 }
