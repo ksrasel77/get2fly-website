@@ -21,11 +21,15 @@ export async function readJson(request) {
   throw new Fail(400, 'Invalid request.');
 }
 // Runs a handler and turns known problems into safe JSON answers (no stack traces or secrets leave the server).
-export async function run(fn) {
+export async function run(fn, env) {
   try { return await fn(); }
   catch (e) {
     if (e instanceof Fail) return json(e.status, { error: e.message, ...e.extra });
-    if (e instanceof LedgerError) { console.error(JSON.stringify({ app: 'get2fly', event: 'ledger_error', code: e.code })); return json(503, { error: 'The service is temporarily unavailable. Please try again in a moment.' }); }
+    if (e instanceof LedgerError) {
+      console.error(JSON.stringify({ app: 'get2fly', event: 'ledger_error', code: e.code, ...(e.detail || {}) }));       // the real reason goes to the Cloudflare logs
+      // Temporary troubleshooting: set DEBUG_PAYMENTS=true to also see the reason in the response. Remove it afterwards.
+      return json(503, { error: 'The service is temporarily unavailable. Please try again in a moment.', ...(env && env.DEBUG_PAYMENTS === 'true' ? { debug: { code: e.code, ...(e.detail || {}) } } : {}) });
+    }
     console.error(JSON.stringify({ app: 'get2fly', event: 'unexpected_error', message: String(e && e.message).slice(0, 200) }));
     return json(500, { error: 'Something went wrong. Please try again.' });
   }
