@@ -7,6 +7,6 @@ export async function onRequestPost({ request, env }) {
   return run(async () => {
     const r = await completeCheckout(env, await readJson(request));
     return json(r.status === 'processing' || r.status === 'payment_pending' || r.status === 'needs_review' ? 202 : 200, r);
-  });
+  }, env);
 }
 export const onRequest = () => json(405, { error: 'Method not allowed.' });

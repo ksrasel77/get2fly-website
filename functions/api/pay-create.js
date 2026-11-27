@@ -3,6 +3,6 @@ import { guard, json, readJson, run } from '../_lib/http.js';
 import { startCheckout } from '../_lib/checkout.js';
 export async function onRequestPost({ request, env }) {
   const bad = guard(request, env); if (bad) return bad;
-  return run(async () => json(200, await startCheckout(env, await readJson(request))));
+  return run(async () => json(200, await startCheckout(env, await readJson(request))), env);
 }
 export const onRequest = () => json(405, { error: 'Method not allowed.' });
