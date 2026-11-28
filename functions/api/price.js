@@ -1,9 +1,11 @@
+import { guard } from '../_lib/http.js';
 // Cloudflare Pages Function: cheapest price for one date (used by the price graph).  URL: /api/price
 // One call = one Duffel search. Results are cached for 30 minutes so repeat views cost nothing.
 const CABINS = { economy: 'economy', premium: 'premium_economy', 'premium economy': 'premium_economy', premium_economy: 'premium_economy', business: 'business', first: 'first' };
 const json = (code, obj) => new Response(JSON.stringify(obj), { status: code, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 
 export async function onRequestPost({ request, env }) {
+  { const bad = guard(request, env); if (bad) return bad; }
   const token = env.DUFFEL_TOKEN;
   if (!token) return json(500, { error: 'Prices are not configured yet.' });
   let b;

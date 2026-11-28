@@ -1,8 +1,10 @@
+import { guard } from '../_lib/http.js';
 // Cloudflare Pages Function: finds a booking by reference + last name.  URL: /api/lookup
 const json = (code, obj) => new Response(JSON.stringify(obj), { status: code, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
 
 export async function onRequestPost({ request, env }) {
+  { const bad = guard(request, env); if (bad) return bad; }
   const token = env.DUFFEL_TOKEN;
   if (!token) return json(500, { error: 'Booking lookup is not configured yet.' });
   let b;

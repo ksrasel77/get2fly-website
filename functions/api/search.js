@@ -1,9 +1,11 @@
+import { guard } from '../_lib/http.js';
 // Cloudflare Pages Function: searches flights through Duffel.  URL: /api/search
 // The Duffel token lives only in the DUFFEL_TOKEN secret (never in the website code).
 const CABINS = { economy: 'economy', premium: 'premium_economy', 'premium economy': 'premium_economy', premium_economy: 'premium_economy', business: 'business', first: 'first' };
 const json = (code, obj) => new Response(JSON.stringify(obj), { status: code, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 
 export async function onRequestPost({ request, env }) {
+  { const bad = guard(request, env); if (bad) return bad; }
   const token = env.DUFFEL_TOKEN;
   if (!token) return json(500, { error: 'Search is not configured yet.' });
 
