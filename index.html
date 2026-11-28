@@ -1904,9 +1904,7 @@
         <div><b>Company</b><a href="#why-us">Why Us</a><a href="#how">How It Works</a><a href="#faq">FAQ</a><a href="#contact">Contact</a></div>
         <div><b>Legal</b><a href="terms.html">Terms &amp; Conditions</a><a href="privacy.html">Privacy Policy</a><a href="refund.html">Refund Policy</a></div>
       </div>
-      <p class="text-center foot-copy">&copy; 2026 Get2Fly LLC. All rights reserved.</p>
-     <p>30 N Gould Street, Sheridan, WY 82801, United States</p>
-      <p>Support: <a href="mailto:support@get2fly.com">support@get2fly.com</a> | WhatsApp: <a href="https://wa.me/97337576600">+973 3757 6600</a></p>
+      <p class="text-center foot-copy">&copy; 2026 Get2Fly. All rights reserved.</p>
     </div>
   </footer>
 
@@ -2384,7 +2382,7 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
         document.getElementById('co-total').innerHTML = `<small>Total · ${n} traveler${n > 1 ? 's' : ''}, ${fee > 0 ? 'incl. service fee' : 'taxes included'}</small><b>${esc(money(amt + fee, o.currency))}</b>`;
         coNext.hidden = CO.step === 2 && !(payCfg.provider && payCfg.provider.flow === 'none');
         coNext.disabled = CO.busy; coNext.textContent = CO.step === 1 ? 'Continue →' : CO.busy ? 'Booking…' : 'Confirm test booking';
-        const err = CO.err ? `<div class="co-err">${esc(CO.err)}</div>` : '';
+        const err = CO.err ? `<div class="co-err">${esc(CO.err)}${CO.debug ? `<br><small class="mono" style="word-break:break-all">Troubleshooting: ${esc(CO.debug)}</small>` : ''}</div>` : '';
         if (CO.step === 1) {
           const two = o.slices.length > 1;
           coBody.innerHTML = `<details class="co-card"><summary><span>${esc(searchState.origin.city)} ${two ? '⇄' : '→'} ${esc(searchState.destination.city)}<br><small style="font-weight:500;color:var(--text-muted)">${esc(o.airline)} · ${esc(o.slices[0].dep.slice(0, 10))}${two ? ' – ' + esc(o.slices[1].dep.slice(0, 10)) : ''} · ${n} traveler${n > 1 ? 's' : ''}</small></span></summary><div style="margin-top:10px">${coSlices(o)}</div></details>
@@ -2480,6 +2478,7 @@ async function verifyOtpCode(email, otpToken, type = 'signup') {
       async function coStartPayment() {
         const r = await fetch('/api/pay-create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(coPayload()) });
         const d = await r.json().catch(() => ({}));
+        CO.debug = d.debug ? JSON.stringify(d.debug) : '';   // only present while DEBUG_PAYMENTS is on in Cloudflare
         if (!r.ok || !d.paymentId) { const e = new Error(d.error || 'We could not start the payment.'); e.info = d; throw e; }
         CO.paymentId = d.paymentId;
         try { sessionStorage.setItem('g2f_pending', JSON.stringify({ paymentId: d.paymentId, orderRef: d.orderRef, t: Date.now() })); } catch (e) { /* private mode */ }
